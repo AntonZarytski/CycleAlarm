@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">CycleAlarm</string>
+    <string name="setting_menu_item">Настройки</string>
+    <string name="help_menu_item">Помощь</string>
+    <string name="about_programm_menu_item">О программе</string>
+    <string name="temp_res_string">даты и дни ближайших сработок</string>
+    <string name="temp_res_for_calendar_fragment">Тут отображается колендарь с отметками будильников и циклом(дни закрашены в разные цвета)</string>
+    <string name="temp_res2_for_calendar_fragment">При нажатии на день тут отображаются события на этот день(будильник, напоминалка)</string>
+    <string name="calendar">Календарь</string>
+    <string name="alarms">Будильники</string>
+    <string name="navigation_drawer_open">Bar open</string>
+    <string name="navigation_drawer_close">Bar_close</string>
+    <string name="my_graphics">Мои графики</string>
+</resources>
