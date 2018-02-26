@@ -1,13 +1,18 @@
 package zaritsky.com.cyclealarm.models;
 
+import android.icu.util.Calendar;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
-public class Alarm {
-    private Timer timeOfActive;
+@RequiresApi(api = Build.VERSION_CODES.N)
+public class Alarm implements Serializable{
+    private Calendar timeOfActiveCalendar;
     private String note;
     private List<Date> datesOfActive;
     private int awekingImageId;
@@ -17,15 +22,34 @@ public class Alarm {
     private int volOfAlarmMusic;
     private int forceOfVibro;
     private boolean isActive;
+    private boolean isOn;
 
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Alarm(Calendar timeOfActiveCalendar, String note, Date ... dates) {
+        datesOfActive = new ArrayList<>();
+        this.timeOfActiveCalendar = timeOfActiveCalendar;
+        this.note = note;
+        this.isActive = true;
+        Collections.addAll(datesOfActive, dates);
+    }
+
+ /*   @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d("LOG_TAG", "ALARM_IS_ON");
+    }
+*/
     /**set/get*/
-    public Timer getTimeOfActive() {
-        return timeOfActive;
-    }
-
-    public void setTimeOfActive(Timer timeOfActive) {
-        this.timeOfActive = timeOfActive;
-    }
+//    public Date getTimeOfActive() {
+//        return timeOfActive;
+//    }
+//
+//    public void setTimeOfActive(Date timeOfActive) {
+//        this.timeOfActive = timeOfActive;
+//    }
 
     public String getNote() {
         return note;
@@ -95,16 +119,11 @@ public class Alarm {
         return isActive;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public Calendar getCalendar() {
+        return timeOfActiveCalendar;
     }
 
-    public Alarm(Timer timeOfActive, String note, Date ... dates) {
-        datesOfActive = new ArrayList<>();
-        this.timeOfActive = timeOfActive;
-        this.note = note;
-        this.isActive = true;
-        Collections.addAll(datesOfActive, dates);
+    public void setCalendar(Calendar calendar) {
+        this.timeOfActiveCalendar = calendar;
     }
-
 }

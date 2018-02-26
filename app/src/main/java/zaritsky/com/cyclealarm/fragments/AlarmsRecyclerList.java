@@ -1,8 +1,10 @@
 package zaritsky.com.cyclealarm.fragments;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,16 +19,32 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
+import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Alarm;
-import zaritsky.com.cyclealarm.models.AlarmListModel;
+import zaritsky.com.cyclealarm.models.AlarmList;
 
-public class AlarmsList extends Fragment {
+import static android.provider.Telephony.Mms.Part.FILENAME;
+
+public class AlarmsRecyclerList extends Fragment {
     private RecyclerView recyclerView;
     private AlarmAdapter adapter;
     private List<Alarm> alarmList;
+    private AbleToChangeFragment callBackAvtivity;
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        callBackAvtivity = (AbleToChangeFragment) context;
+    }
 
     @Nullable
     @Override
@@ -41,11 +59,12 @@ public class AlarmsList extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlarmAdd newAlarm = new AlarmAdd();
+                callBackAvtivity.replaceFragments(R.id.content_main, newAlarm);
                 Toast toast = Toast.makeText(view.getContext(), "Плавающая кнопка", Toast.LENGTH_LONG);
                 toast.show();
             }
         });
-
         return view;
 
     }
@@ -53,7 +72,26 @@ public class AlarmsList extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        alarmList = AlarmListModel.getInstance(getContext()).getAlarmList();
+        final AlarmList alarms = AlarmList.getInstance(getContext());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File file = new File(getActivity().getApplicationContext().getFilesDir(), FILENAME);
+                    if (!file.exists()) {
+                        return;
+                    }
+                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+                    alarmList = (List<Alarm>) ois.readObject();
+                    if (alarmList==null){
+                        alarmList = new ArrayList<>();
+                    }
+                    alarms.setAlarmList(alarmList);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         adapter = new AlarmAdapter(alarmList, getContext());
     }
 
@@ -64,7 +102,6 @@ public class AlarmsList extends Fragment {
         public AlarmAdapter(List<Alarm> alarmList, Context context) {
             this.alarmList = alarmList;
             this.context = context;
-
         }
 
         @Override
@@ -73,13 +110,15 @@ public class AlarmsList extends Fragment {
             return new AlarmViewHolder(itemView);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
-        public void onBindViewHolder(AlarmViewHolder holder, int position) {
+        public void onBindViewHolder(final AlarmViewHolder holder, int position) {
             final Alarm alarm = alarmList.get(position);
-            holder.timeOfAlarm.setText("00:00" /*alarm.getTimeOfActive().toString()*/);
+            holder.timeOfAlarm.setText(alarm.getCalendar().getTime().toString());
             holder.daysOfActive.setText("Пн Вт Ср Чт Пт Сб Вс"/*alarm.getDatesOfActive()*/);
             final Switch activeAlarm = holder.onOffAlarmSwitch;
             activeAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (activeAlarm.isChecked()) {
@@ -97,8 +136,9 @@ public class AlarmsList extends Fragment {
             holder.alarmView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast toast = Toast.makeText(getContext(), "На фрагмент будильника", Toast.LENGTH_LONG);
-                    toast.show();
+                    callBackAvtivity.onSelectedFragment(holder.getAdapterPosition());
+                    /*Toast toast = Toast.makeText(getContext(), "На фрагмент будильника", Toast.LENGTH_LONG);
+                    toast.show();*/
                 }
             });
 

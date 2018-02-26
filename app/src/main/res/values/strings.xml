@@ -11,4 +11,18 @@
     <string name="navigation_drawer_open">Bar open</string>
     <string name="navigation_drawer_close">Bar_close</string>
     <string name="my_graphics">Мои графики</string>
+    <string name="melody_of_alarms_signal">Мелодия сигнала</string>
+    <string name="save_alarm">Сохранить</string>
+    <string name="sleep_five_minutes">Дремать 5 минут</string>
+    <string name="temperature">Температура:</string>
+    <string name="wind">Ветер:</string>
+    <string name="humidity">Влажность:</string>
+    <string name="cloud">Облачность:</string>
+    <string name="power">Давление:</string>
+    <string name="deactive_alarm">Отмена</string>
+    <string name="open_weather_map_app_id">e8e2cd56b5ff9dc03867cb204da1f6d9</string>
+    <string name="place_not_found">Такой город не найден</string>
+    <string name="rain_volume">Осадки</string>
+    <string name="notification_of_alarm">Напоминание</string>
+
 </resources>

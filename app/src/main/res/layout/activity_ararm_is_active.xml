@@ -1,9 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="zaritsky.com.cyclealarm.activities.ArarmIsActive">
+    <TextClock
+        android:id="@+id/textClock"
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:format24Hour="h:mm"
+        android:textSize="30sp"/>
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="147dp"
+        app:srcCompat="@drawable/weather" />
+    <TextView
+        android:id="@+id/city_name_text_view"
+        android:layout_width="match_parent"
+        android:textSize="30sp"
+        android:layout_height="wrap_content"
+        android:text="Город"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
+
+        <TextView
+            android:id="@+id/temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/temperature"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/value_of_temperature_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/temperature"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="TextView"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/temperature"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/wind"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/value_of_wind_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/wind"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="TextView"
+            android:textSize="16dp" />
+        <TextView
+            android:id="@+id/rain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wind"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/rain_volume"
+            android:textSize="16dp" />
+        <TextView
+            android:id="@+id/value_of_rain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/rain"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/rain_volume"
+            android:textSize="16dp" />
+        <TextView
+            android:id="@+id/humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rain"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/humidity"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/value_of_precipitation_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/humidity"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="TextView"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/humidity"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/cloud"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/value_of_cloud_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/cloud"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="TextView"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cloud"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/power"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/value_of_power_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/power"
+            android:layout_alignParentEnd="true"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="TextView"
+            android:textSize="16dp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom|end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/deactive_alarm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/deactive_alarm" />
+
+        <Button
+            android:id="@+id/sleep_five_minutes_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sleep_five_minutes" />
+    </LinearLayout>
+
+</LinearLayout>

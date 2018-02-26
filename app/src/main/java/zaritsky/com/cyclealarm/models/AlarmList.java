@@ -2,39 +2,34 @@ package zaritsky.com.cyclealarm.models;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
-public class AlarmListModel {
-    private static AlarmListModel ourInstance = null;
+public class AlarmList implements Serializable {
+    private static AlarmList ourInstance = null;
     private Context context;
     private List<Alarm> alarmList;
 
-    public static AlarmListModel getInstance(Context context) {
+    public static AlarmList getInstance(Context context) {
         if (ourInstance == null) {
-            return ourInstance = new AlarmListModel(context);
+            return ourInstance = new AlarmList(context);
         } else {
             return ourInstance;
         }
     }
 
-    public static AlarmListModel getOurInstance() {
+    public static AlarmList getOurInstance() {
         return ourInstance;
     }
 
-    private AlarmListModel(Context context) {
+    private AlarmList(Context context) {
         this.context = context;
         alarmList = new ArrayList<>();
-        alarmList.add(new Alarm(new Timer(), "Null", new Date(55555555)));
-        alarmList.add(new Alarm(new Timer(), "Null", new Date(55555555)));
-        alarmList.add(new Alarm(new Timer(), "Null", new Date(55555555)));
-        alarmList.add(new Alarm(new Timer(), "Null", new Date(55555555)));
-        alarmList.add(new Alarm(new Timer(), "Null", new Date(55555555)));
-        alarmList.add(new Alarm(new Timer(), "Null", new Date(55555555)));
+    }
 
-
+    public void setAlarmList(List<Alarm> alarmList) {
+        this.alarmList = alarmList;
     }
 
     public List<Alarm> getAlarmList() {

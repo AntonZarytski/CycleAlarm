@@ -13,4 +13,12 @@
     tools:context="zaritsky.com.cyclealarm.activities.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <Button
+        android:id="@+id/test_active_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Активировать будильник" />
+
 </RelativeLayout>

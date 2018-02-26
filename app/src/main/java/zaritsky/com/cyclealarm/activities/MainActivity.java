@@ -1,6 +1,8 @@
 package zaritsky.com.cyclealarm.activities;
 
 
+import android.app.AlarmManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,25 +15,40 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import zaritsky.com.cyclealarm.R;
-import zaritsky.com.cyclealarm.fragments.AlarmsList;
+import zaritsky.com.cyclealarm.fragments.AlarmAdd;
+import zaritsky.com.cyclealarm.fragments.AlarmsRecyclerList;
 import zaritsky.com.cyclealarm.fragments.Calendar;
 import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 
 public class MainActivity extends AppCompatActivity implements AbleToChangeFragment {
     private FragmentManager fm;
-    private AlarmsList alarmsListFragment;
+    private AlarmsRecyclerList alarmsListFragment;
     private Calendar calendarFragment;
+    private AlarmManager alarmManager;
+    private Button testBtnAlarm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         fm = getSupportFragmentManager();
-        alarmsListFragment = new AlarmsList();
+        alarmsListFragment = new AlarmsRecyclerList();
         calendarFragment = new Calendar();
+        testBtnAlarm = findViewById(R.id.test_active_alarm);
+
+        testBtnAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ArarmIsActive.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
 
                 } else if (id == R.id.to_alarms_fragment) {
                     replaceFragments(R.id.content_main, alarmsListFragment);
-                } /*else if (id == R.id.nav_manage) {
+                } /* else if (id == R.id.test_alarm) {
 
                 } else if (id == R.id.nav_share) {
 
@@ -98,6 +115,11 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     }
 
     @Override
+    public void removeFragment(Fragment removingFragment) {
+
+    }
+
+    @Override
     public void addFragment(int containerViewId, Fragment addingFragment) {
         fm.beginTransaction().add(containerViewId, addingFragment).commit();
     }
@@ -106,6 +128,12 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     public void replaceFragments(int containerViewId, Fragment newFragment) {
         fm.beginTransaction().addToBackStack(null).replace(containerViewId, newFragment).commit();
 
+    }
+
+    @Override
+    public void onSelectedFragment(int position) {
+        AlarmAdd alarm = AlarmAdd.newInstance(position);
+        replaceFragments(R.id.content_main, alarm);
     }
 
 }
