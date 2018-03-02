@@ -14,7 +14,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="00:00"
-        android:textSize="36sp" />
+        android:textSize="24sp" />
 
     <Switch
         android:id="@+id/on_or_off_switch"
@@ -28,13 +28,12 @@
         android:id="@+id/day_of_active_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_alignBaseline="@+id/on_or_off_switch"
         android:layout_alignBottom="@+id/on_or_off_switch"
         android:layout_toEndOf="@+id/time_of_alarm_text_view"
         android:layout_toStartOf="@+id/on_or_off_switch"
-        android:text="@string/temp_res_string"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="30dp" />
+        android:text="@string/temp_res_string" />
 
     <ImageView
         android:id="@+id/to_expand_element_down"

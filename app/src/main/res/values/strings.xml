@@ -2,7 +2,7 @@
     <string name="app_name">CycleAlarm</string>
     <string name="setting_menu_item">Настройки</string>
     <string name="help_menu_item">Помощь</string>
-    <string name="about_programm_menu_item">О программе</string>
+    <string name="about_program_menu_item">О программе</string>
     <string name="temp_res_string">даты и дни ближайших сработок</string>
     <string name="temp_res_for_calendar_fragment">Тут отображается колендарь с отметками будильников и циклом(дни закрашены в разные цвета)</string>
     <string name="temp_res2_for_calendar_fragment">При нажатии на день тут отображаются события на этот день(будильник, напоминалка)</string>
@@ -24,5 +24,16 @@
     <string name="place_not_found">Такой город не найден</string>
     <string name="rain_volume">Осадки</string>
     <string name="notification_of_alarm">Напоминание</string>
+
+    <string name="weather_sunny">&#xf00d;</string>
+    <string name="weather_clear_night">&#xf02e;</string>
+    <string name="weather_foggy">&#xf014;</string>
+    <string name="weather_cloudy">&#xf013;</string>
+    <string name="weather_rainy">&#xf019;</string>
+    <string name="weather_snowy">&#xf01b;</string>
+    <string name="weather_thunder">&#xf01e;</string>
+    <string name="weather_drizzle">&#xf01c;</string>
+    <string name="period_of_recycler">Период повтора</string>
+
 
 </resources>
