@@ -1,18 +1,26 @@
 package zaritsky.com.cyclealarm.models;
 
+import android.app.AlarmManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class Alarm implements Serializable{
+public class Alarm extends BroadcastReceiver implements Serializable{
     private Calendar timeOfActiveCalendar;
+    private AlarmManager alarmManager;
     private String note;
     private List<Date> datesOfActive;
     private int awekingImageId;
@@ -37,11 +45,11 @@ public class Alarm implements Serializable{
         Collections.addAll(datesOfActive, dates);
     }
 
- /*   @Override
+    @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("LOG_TAG", "ALARM_IS_ON");
     }
-*/
+
     /**set/get*/
 //    public Date getTimeOfActive() {
 //        return timeOfActive;
@@ -50,7 +58,10 @@ public class Alarm implements Serializable{
 //    public void setTimeOfActive(Date timeOfActive) {
 //        this.timeOfActive = timeOfActive;
 //    }
-
+    public String getFormatedTime(){
+        return new SimpleDateFormat("H:mm",
+                new Locale("ru", "RU")).format(timeOfActiveCalendar.getTime());
+    }
     public String getNote() {
         return note;
     }
@@ -126,4 +137,5 @@ public class Alarm implements Serializable{
     public void setCalendar(Calendar calendar) {
         this.timeOfActiveCalendar = calendar;
     }
+
 }

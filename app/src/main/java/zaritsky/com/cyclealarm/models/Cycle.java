@@ -1,16 +1,28 @@
 package zaritsky.com.cyclealarm.models;
 
-/**
- * Created by Anton&&Natasha on 01.03.2018.
- */
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cycle {
-    private static final Cycle ourInstance = new Cycle();
+    private String name;
+    private List<TypeOfDay> cycle;
 
-    public static Cycle getInstance() {
-        return ourInstance;
+    public Cycle(String name) {
+        this.name = name;
+        cycle = new ArrayList<>();
+    }
+    public List<TypeOfDay> getCycle(){
+        return cycle;
+    }
+    public void addToCycle(TypeOfDay typeOfDay){
+        cycle.add(typeOfDay);
+    }
+    public void removeFromCycle(TypeOfDay typeOfDay){
+        cycle.remove(typeOfDay);
     }
 
-    private Cycle() {
+    public String getName() {
+        return name;
     }
 }

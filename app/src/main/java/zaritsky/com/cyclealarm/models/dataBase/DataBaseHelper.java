@@ -1,4 +1,4 @@
-package zaritsky.com.cyclealarm.models;
+package zaritsky.com.cyclealarm.models.dataBase;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

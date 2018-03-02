@@ -1,13 +1,17 @@
-package zaritsky.com.cyclealarm.models;
+package zaritsky.com.cyclealarm.models.dataBase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import zaritsky.com.cyclealarm.models.TypeOfDay;
 
 public class CycleDataSource {
     private DataBaseHelper dbHelper;
@@ -35,24 +39,27 @@ public class CycleDataSource {
     public void addType(TypeOfDay type) {
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.COLUMN_NAME, type.getName());
+        values.put(DataBaseHelper.COLUMN_TIME, type.getName());
+        values.put(DataBaseHelper.COLUMN_COLOR, type.getName());
 
         database.insert(DataBaseHelper.TABLE_TYPES, null, values);
     }
 
-    public void editNote(long id) {
-        ContentValues editedNote = new ContentValues();
-        editedNote.put(DataBaseHelper.COLUMN_ID, id);
-        editedNote.put(DataBaseHelper.COLUMN_NAME, "Wine dandelion");
-        editedNote.put(DataBaseHelper.COLUMN_TIME, "Ray Bradbury");
-        editedNote.put(DataBaseHelper.COLUMN_COLOR, "Ray Bradbury");
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void editType(TypeOfDay oldType, TypeOfDay newType) {
+        ContentValues editedType = new ContentValues();
+        //editedNote.put(DataBaseHelper.COLUMN_ID, id);
+        editedType.put(DataBaseHelper.COLUMN_NAME, newType.getName());
+        editedType.put(DataBaseHelper.COLUMN_TIME, newType.getTimeOfWakeUp());
+        editedType.put(DataBaseHelper.COLUMN_COLOR, newType.getColor().getComponentCount());
 
         database.update(DataBaseHelper.TABLE_TYPES,
-                editedNote,
-                DataBaseHelper.COLUMN_ID + "=" + id,
+                editedType,
+                DataBaseHelper.COLUMN_NAME + "=" + oldType.getName(),
                 null);
     }
 
-    public void deleteNote(TypeOfDay typeOfDay) {
+    public void deleteType(TypeOfDay typeOfDay) {
         String name = typeOfDay.getName();
         database.delete(DataBaseHelper.TABLE_TYPES, DataBaseHelper.COLUMN_NAME
                 + " = " + name, null);
@@ -62,25 +69,24 @@ public class CycleDataSource {
         database.delete(DataBaseHelper.TABLE_TYPES, null, null);
     }
 
-    public List<TypeOfDay> getAllNotes() {
-        List<TypeOfDay> notes = new ArrayList<>();
+    public List<TypeOfDay> getAllTypes() {
+        List<TypeOfDay> types = new ArrayList<>();
 
         Cursor cursor = database.query(DataBaseHelper.TABLE_TYPES,
                 notesAllColumn, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            TypeOfDay type = cursorToNote(cursor);
-            notes.add(type);
+            TypeOfDay type = cursorToType(cursor);
+            types.add(type);
             cursor.moveToNext();
         }
-        
         // после закрыть курсор
         cursor.close();
-        return notes;
+        return types;
     }
 
-    private TypeOfDay cursorToNote(Cursor cursor) {
+    private TypeOfDay cursorToType(Cursor cursor) {
         TypeOfDay type = new TypeOfDay();
         //note.setId(cursor.getLong(0));
         type.setName(cursor.getString(1));

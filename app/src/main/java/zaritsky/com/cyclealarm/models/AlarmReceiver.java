@@ -1,8 +1,18 @@
 package zaritsky.com.cyclealarm.models;
 
-/**
- * Created by Anton&&Natasha on 01.03.2018.
- */
 
-public class AlarmReceiver {
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+
+import zaritsky.com.cyclealarm.activities.ArarmIsActive;
+
+public class AlarmReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        intent = new Intent(context, ArarmIsActive.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
 }

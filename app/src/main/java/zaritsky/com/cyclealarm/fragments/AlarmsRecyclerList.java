@@ -55,7 +55,7 @@ public class AlarmsRecyclerList extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
 
-        FloatingActionButton fab = view.findViewById(R.id.floating_button_main);
+        FloatingActionButton fab = view.findViewById(R.id.floating_button_add_alarm);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,9 +73,7 @@ public class AlarmsRecyclerList extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final AlarmList alarms = AlarmList.getInstance(getContext());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
                 try {
                     File file = new File(getActivity().getApplicationContext().getFilesDir(), FILENAME);
                     if (!file.exists()) {
@@ -90,9 +88,9 @@ public class AlarmsRecyclerList extends Fragment {
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
-        }).start();
         adapter = new AlarmAdapter(alarmList, getContext());
+
+
     }
 
     private class AlarmAdapter extends RecyclerView.Adapter<AlarmViewHolder> {
@@ -114,7 +112,7 @@ public class AlarmsRecyclerList extends Fragment {
         @Override
         public void onBindViewHolder(final AlarmViewHolder holder, int position) {
             final Alarm alarm = alarmList.get(position);
-            holder.timeOfAlarm.setText(alarm.getCalendar().getTime().toString());
+            holder.timeOfAlarm.setText(alarm.getFormatedTime());
             holder.daysOfActive.setText("Пн Вт Ср Чт Пт Сб Вс"/*alarm.getDatesOfActive()*/);
             final Switch activeAlarm = holder.onOffAlarmSwitch;
             activeAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
