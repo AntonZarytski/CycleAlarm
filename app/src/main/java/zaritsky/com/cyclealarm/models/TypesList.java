@@ -24,6 +24,7 @@ public class TypesList {
         types = new ArrayList<>();
         cycleDataSource = new CycleDataSource(context);
         cycleDataSource.open();
+        cycleDataSource.deleteAll();
         types = cycleDataSource.getAllTypes();
         cycleDataSource.close();
     }

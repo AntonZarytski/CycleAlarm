@@ -1,93 +1,93 @@
 package zaritsky.com.cyclealarm.fragments;
 
-import android.annotation.TargetApi;
-import android.graphics.Color;
-import android.icu.util.Calendar;
-import android.os.Build;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
 import zaritsky.com.cyclealarm.R;
-import zaritsky.com.cyclealarm.models.Cycle;
-import zaritsky.com.cyclealarm.models.CycleList;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 import zaritsky.com.cyclealarm.models.TypesList;
 
-public class CycleAdd extends Fragment{
+public class CycleAdd extends Fragment {
+    private RecyclerView recyclerView;
     private TypesList typesList;
-    private CycleList cycleList = CycleList.getInstance(getContext());
-    private Cycle cycle;
-    private LinearLayout typeOfDayFrame;
-    private TextView nameOfType;
-    private TextView timeOfWakeUp;
-    private Button saveCycle;
-    //TODO листенер на изменение имя
-    private TextView nameOfCycle;
-    private int numberOfType=0;
-    @TargetApi(Build.VERSION_CODES.O)
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    private CycleAddAdapter adapter;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.cycle_add_fragment, container, false);
-        typeOfDayFrame = view.findViewById(R.id.type_of_day_background);
-        nameOfType = view.findViewById(R.id.type_of_day_name);
-        timeOfWakeUp = view.findViewById(R.id.type_of_day_wake_up);
-        nameOfCycle = view.findViewById(R.id.name_of_cycle_text_view);
-        saveCycle = view.findViewById(R.id.save_cycle_button);
+        View view = inflater.inflate(R.layout.cycle_editor_fragment, container, false);
+        recyclerView = view.findViewById(R.id.cycles_add_recycler_view);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 7);
         typesList = TypesList.getInstance(getContext());
-        test();
-
-        typeOfDayFrame.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View v) {
-                //typeOfDayFrame.setBackgroundColor(typeOfDays.get(numberOfType).getColor().getComponentCount());
-                nameOfType.setText(typesList.getTypes().get(numberOfType).getName());
-                timeOfWakeUp.setText(typesList.getTypes().get(numberOfType).getTimeOfWakeUp());
-                numberOfType++;
-            }
-        });
-
-        saveCycle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cycle = new Cycle(nameOfCycle.getText().toString());
-                cycleList.addToCycles(cycle);
-            }
-        });
+        adapter = new CycleAddAdapter(typesList.getTypes(), getContext());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layoutManager);
         return view;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void test() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 36);
-        Color color =  new Color();
-        TypeOfDay type1 = new TypeOfDay("Утро", calendar, color);
-        Calendar calendar1 = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 36);
-        Color color2 =  new Color();
-        TypeOfDay type2 = new TypeOfDay("День", calendar1, color2);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 36);
-        Color color3 =  new Color();
-        TypeOfDay type3 = new TypeOfDay("Ночь", calendar2, color3);
-        typesList.addType(type1);
-        typesList.addType(type2);
-        typesList.addType(type3);
+    static class CycleAddAdapter extends RecyclerView.Adapter<CycleAddViewHolder> {
+        List<TypeOfDay> typesList;
+        Context context;
+        static int numberOfType=0;
 
+        public CycleAddAdapter(List<TypeOfDay> typesList, Context context) {
+            this.typesList = typesList;
+            this.context = context;
+        }
+
+        @Override
+        public CycleAddViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.type_of_day_element, parent, false);
+            return new CycleAddViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(CycleAddViewHolder holder, int position) {
+            holder.wakeUpTime.setText("-");
+            final TextView name = holder.nameOfType;
+            final TextView wakeup = holder.wakeUpTime;
+            holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (typesList.size() > 0) {
+                        name.setText(typesList.get(numberOfType).getName());
+                        wakeup.setText(typesList.get(numberOfType).getTimeOfWakeUp());
+                        numberOfType++;
+                        if (numberOfType == typesList.size()) {
+                            numberOfType = 0;
+                        }
+                    }
+                }
+            });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return 35;
+        }
+    }
+
+    static class CycleAddViewHolder extends RecyclerView.ViewHolder {
+        RelativeLayout linearLayout;
+        TextView nameOfType;
+        TextView wakeUpTime;
+
+        public CycleAddViewHolder(View itemView) {
+            super(itemView);
+            linearLayout = itemView.findViewById(R.id.type_of_day_background);
+            nameOfType = itemView.findViewById(R.id.type_of_day_name);
+            wakeUpTime = itemView.findViewById(R.id.type_of_day_wake_up);
+        }
     }
 }
