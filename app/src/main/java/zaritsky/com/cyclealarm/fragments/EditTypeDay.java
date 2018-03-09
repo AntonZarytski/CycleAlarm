@@ -56,7 +56,7 @@ public class EditTypeDay extends Fragment {
             public void onClick(View v) {
                 @SuppressLint({"NewApi", "LocalSuppress"})
                 Calendar calendar = Calendar.getInstance();
-                typeOfDay = new TypeOfDay(nameOfType.getText().toString(),calendar,  colorOfType.getDrawingCacheBackgroundColor());
+                typeOfDay = new TypeOfDay(nameOfType.getText().toString(),calendar,  colorOfType.getSolidColor());
                 typesList.addType(typeOfDay);
             }
         });
