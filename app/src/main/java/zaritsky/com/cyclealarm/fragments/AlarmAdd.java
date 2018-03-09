@@ -128,10 +128,10 @@ public class AlarmAdd extends Fragment {
                 }).start();
                 Intent alarmIntent = createIntent("action 1", "extra 1");
                 PendingIntent pIntent1 = PendingIntent.getBroadcast(getContext(), 0, alarmIntent, 0);
-                long hour = timePicker.getHour()*60000*60;
+                //long hour = timePicker.getHour()*60000*60;
                 long min = timePicker.getMinute()*60000;
                 Log.d(LOG_TAG, "start from " + min +" mills ");
-                am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +  hour+min, pIntent1);
+                am.set(AlarmManager.RTC_WAKEUP, min, pIntent1);
             }
         });
     }

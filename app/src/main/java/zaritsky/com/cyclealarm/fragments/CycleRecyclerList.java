@@ -15,6 +15,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
@@ -22,11 +27,13 @@ import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
 
+import static android.provider.Telephony.Mms.Part.FILENAME;
+
 public class CycleRecyclerList extends Fragment{
         private AbleToChangeFragment callBackAvtivity;
         private RecyclerView recyclerView;
         private CycleAdapter adapter;
-        private List<Cycle> cycleList;
+        private CycleList cycleList;
 
 
         @Override
@@ -38,7 +45,7 @@ public class CycleRecyclerList extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.users_cycles_recycler_fragment, container, false);
+        View view = inflater.inflate(R.layout.cycles_recycler, container, false);
         recyclerView = view.findViewById(R.id.cycles_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setAdapter(adapter);
@@ -54,14 +61,48 @@ public class CycleRecyclerList extends Fragment{
                 toast.show();
             }
         });
+
         return view;
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+            //TODO перенести в onAttach
         super.onCreate(savedInstanceState);
-        cycleList =  CycleList.getInstance(getContext()).getCycleList();
-        adapter = new CycleAdapter(cycleList, getContext());
+        cycleList =  CycleList.getInstance(getContext());
+        //TODO загрузка листа циклов из внутренней памяти
+//        List<Cycle> cycles;
+//        try {
+//            File file = new File(getActivity().getApplicationContext().getFilesDir(), FILENAME);
+//            if (!file.exists()) {
+//                return;
+//            }
+//            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+//            cycles = (List<Cycle>) ois.readObject();
+//            if (cycles==null){
+//               cycles = new ArrayList<>();
+//            }
+//            cycleList.setCycleList(cycles);
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+        adapter = new CycleAdapter(cycleList.getCycleList(), getContext());
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        cycleList =  CycleList.getInstance(getContext());
+        adapter = new CycleAdapter(cycleList.getCycleList(), getContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        cycleList =  CycleList.getInstance(getContext());
+        adapter = new CycleAdapter(cycleList.getCycleList(), getContext());
+        recyclerView.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     private class CycleAdapter extends RecyclerView.Adapter<CycleViewHolder>{

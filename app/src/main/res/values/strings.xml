@@ -34,6 +34,7 @@
     <string name="weather_thunder">&#xf01e;</string>
     <string name="weather_drizzle">&#xf01c;</string>
     <string name="period_of_recycler">Период повтора</string>
+    <string name="setting_type_of_day">Настройка дня</string>
 
 
 </resources>

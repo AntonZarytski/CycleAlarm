@@ -19,6 +19,8 @@ import zaritsky.com.cyclealarm.fragments.AlarmAdd;
 import zaritsky.com.cyclealarm.fragments.AlarmsRecyclerList;
 import zaritsky.com.cyclealarm.fragments.Calendar;
 import zaritsky.com.cyclealarm.fragments.CycleRecyclerList;
+import zaritsky.com.cyclealarm.fragments.EditTypeDay;
+import zaritsky.com.cyclealarm.fragments.TypeDayRecyclerList;
 import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 
 public class MainActivity extends AppCompatActivity implements AbleToChangeFragment {
@@ -26,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     private AlarmsRecyclerList alarmsListFragment;
     private Calendar calendarFragment;
     private CycleRecyclerList cycleRecyclerList;
+    private Fragment editTypeDay;
+    private TypeDayRecyclerList typesList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         alarmsListFragment = new AlarmsRecyclerList();
         calendarFragment = new Calendar();
         cycleRecyclerList = new CycleRecyclerList();
+        typesList = new TypeDayRecyclerList();
+
+        editTypeDay = new EditTypeDay();
 //        testBtnAlarm = findViewById(R.id.test_active_alarm);
 //
 //        testBtnAlarm.setOnClickListener(new View.OnClickListener() {
@@ -67,9 +75,9 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
                     replaceFragments(R.id.content_main, cycleRecyclerList);
                 } else if (id == R.id.to_alarms_fragment) {
                     replaceFragments(R.id.content_main, alarmsListFragment);
-                } /* else if (id == R.id.test_alarm) {
-
-                } else if (id == R.id.nav_share) {
+                }  else if (id == R.id.new_day_type_fragment) {
+                    replaceFragments(R.id.content_main, typesList);
+                } /*else if (id == R.id.nav_share) {
 
                 } else if (id == R.id.nav_send) {
 

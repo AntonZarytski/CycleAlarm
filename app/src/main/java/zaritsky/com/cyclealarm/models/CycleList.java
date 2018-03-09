@@ -12,7 +12,7 @@ public class CycleList {
 
     public static CycleList getInstance(Context context) {
         if (ourInstance==null){
-            return new CycleList(context);
+            return ourInstance = new CycleList(context);
         }
         return ourInstance;
     }

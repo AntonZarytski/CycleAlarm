@@ -31,4 +31,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     implementation 'com.google.code.gson:gson:2.8.2'
+    compile 'com.pes.materialcolorpicker:library:1.2.0'
 }

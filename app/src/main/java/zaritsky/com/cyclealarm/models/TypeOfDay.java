@@ -1,6 +1,6 @@
 package zaritsky.com.cyclealarm.models;
 
-import android.graphics.Color;
+import android.annotation.SuppressLint;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -12,14 +12,13 @@ public class TypeOfDay {
    private String name;
    private Calendar wakeUp;
    private String timeOfWakeUp;
-   private Color color;
+   private int color;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public TypeOfDay(String name, Calendar wakeUp, Color color) {
+    @SuppressLint("NewApi")
+    public TypeOfDay(String name, Calendar wakeUp, int color) {
         this.name = name;
         this.wakeUp = wakeUp;
         timeOfWakeUp = new SimpleDateFormat("H:mm", new Locale("ru", "RU")).format(wakeUp.getTime());
-        //TODO сделать выбор цвета для отображения на календаре
         this.color = color;
     }
     public TypeOfDay(){
@@ -50,11 +49,11 @@ public class TypeOfDay {
         return timeOfWakeUp;
     }
 
-    public Color getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(int color) {
         this.color = color;
     }
 }

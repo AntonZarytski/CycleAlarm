@@ -49,7 +49,7 @@ public class AlarmsRecyclerList extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.alarms_list_fragment, container, false);
+        View view = inflater.inflate(R.layout.alarms_list_recycler, container, false);
         recyclerView = view.findViewById(R.id.alarms_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setAdapter(adapter);
@@ -61,8 +61,6 @@ public class AlarmsRecyclerList extends Fragment {
             public void onClick(View view) {
                 AlarmAdd newAlarm = new AlarmAdd();
                 callBackAvtivity.replaceFragments(R.id.content_main, newAlarm);
-                Toast toast = Toast.makeText(view.getContext(), "Плавающая кнопка", Toast.LENGTH_LONG);
-                toast.show();
             }
         });
         return view;
@@ -89,8 +87,6 @@ public class AlarmsRecyclerList extends Fragment {
                     e.printStackTrace();
                 }
         adapter = new AlarmAdapter(alarmList, getContext());
-
-
     }
 
     private class AlarmAdapter extends RecyclerView.Adapter<AlarmViewHolder> {

@@ -10,12 +10,12 @@ import zaritsky.com.cyclealarm.models.dataBase.CycleDataSource;
 
 public class TypesList {
     private List<TypeOfDay> types;
-    private static final TypesList ourInstance = null;
+    private static TypesList ourInstance = null;
     private CycleDataSource cycleDataSource;
 
     public static TypesList getInstance(Context context) {
         if (ourInstance == null) {
-            return new TypesList(context);
+            return ourInstance = new TypesList(context);
         }else
         return ourInstance;
     }
@@ -24,7 +24,7 @@ public class TypesList {
         types = new ArrayList<>();
         cycleDataSource = new CycleDataSource(context);
         cycleDataSource.open();
-        cycleDataSource.deleteAll();
+        //cycleDataSource.deleteAll();
         types = cycleDataSource.getAllTypes();
         cycleDataSource.close();
     }

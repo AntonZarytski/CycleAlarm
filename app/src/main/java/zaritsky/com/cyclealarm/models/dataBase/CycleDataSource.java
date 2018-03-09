@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
@@ -51,7 +50,7 @@ public class CycleDataSource {
         //editedNote.put(DataBaseHelper.COLUMN_ID, id);
         editedType.put(DataBaseHelper.COLUMN_NAME, newType.getName());
         editedType.put(DataBaseHelper.COLUMN_TIME, newType.getTimeOfWakeUp());
-        editedType.put(DataBaseHelper.COLUMN_COLOR, newType.getColor().getComponentCount());
+        editedType.put(DataBaseHelper.COLUMN_COLOR, newType.getColor());
 
         database.update(DataBaseHelper.TABLE_TYPES,
                 editedType,
@@ -92,7 +91,7 @@ public class CycleDataSource {
         type.setName(cursor.getString(1));
         type.setTimeOfWakeUp(cursor.getString(2));
         //cursor.getInt(3)
-        type.setColor(new Color());
+        type.setColor(cursor.getInt(3));
         return type;
     }
 
