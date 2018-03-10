@@ -38,8 +38,8 @@ public class CycleDataSource {
     public void addType(TypeOfDay type) {
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.COLUMN_NAME, type.getName());
-        values.put(DataBaseHelper.COLUMN_TIME, type.getName());
-        values.put(DataBaseHelper.COLUMN_COLOR, type.getName());
+        values.put(DataBaseHelper.COLUMN_TIME, type.getTimeOfWakeUp());
+        values.put(DataBaseHelper.COLUMN_COLOR, type.getColor());
 
         database.insert(DataBaseHelper.TABLE_TYPES, null, values);
     }
@@ -80,7 +80,6 @@ public class CycleDataSource {
             types.add(type);
             cursor.moveToNext();
         }
-        // после закрыть курсор
         cursor.close();
         return types;
     }
@@ -90,7 +89,6 @@ public class CycleDataSource {
         //note.setId(cursor.getLong(0));
         type.setName(cursor.getString(1));
         type.setTimeOfWakeUp(cursor.getString(2));
-        //cursor.getInt(3)
         type.setColor(cursor.getInt(3));
         return type;
     }

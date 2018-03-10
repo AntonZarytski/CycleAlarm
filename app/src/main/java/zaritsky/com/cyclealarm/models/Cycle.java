@@ -1,11 +1,12 @@
 package zaritsky.com.cyclealarm.models;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Cycle {
+public class Cycle implements Serializable {
     private String name;
     private List<TypeOfDay> cycle;
 

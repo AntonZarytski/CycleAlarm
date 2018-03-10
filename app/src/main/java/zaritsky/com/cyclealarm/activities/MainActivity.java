@@ -50,12 +50,6 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fm = getSupportFragmentManager();
-        alarmsListFragment = new AlarmsRecyclerList();
-        calendarFragment = new Calendar();
-        cycleRecyclerList = new CycleRecyclerList();
-        typesList = new TypeDayRecyclerList();
-        editTypeDay = new EditTypeDay();
         try {
             alarmList = AlarmList.getInstance(getApplicationContext());
             cycleList = CycleList.getInstance(getApplicationContext());
@@ -65,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
             if (!alarmsSavePath.exists()) {
                 return;
             }
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ALARMFILE));
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(alarmsSavePath));
             alarms = (List<Alarm>) ois.readObject();
             if (alarms ==null){
                 alarms = new ArrayList<>();
@@ -81,10 +75,13 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
             }
             cycleList.setCycleList(cycles);
             alarmList.setAlarmList(alarms);
+            ois.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
+        fm = getSupportFragmentManager();
+        initFragments();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -119,6 +116,14 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         });
 
 
+    }
+
+    private void initFragments() {
+        alarmsListFragment = new AlarmsRecyclerList();
+        calendarFragment = new Calendar();
+        cycleRecyclerList = new CycleRecyclerList();
+        typesList = new TypeDayRecyclerList();
+        editTypeDay = new EditTypeDay();
     }
 
     @Override

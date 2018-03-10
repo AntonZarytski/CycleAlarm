@@ -5,10 +5,11 @@ import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class TypeOfDay {
+public class TypeOfDay implements Serializable {
    private String name;
    private Calendar wakeUp;
    private String timeOfWakeUp;
@@ -18,6 +19,7 @@ public class TypeOfDay {
     public TypeOfDay(String name, Calendar wakeUp, int color) {
         this.name = name;
         this.wakeUp = wakeUp;
+        //TODO рахобраться с временем
         timeOfWakeUp = new SimpleDateFormat("H:mm", new Locale("ru", "RU")).format(wakeUp.getTime());
         this.color = color;
     }

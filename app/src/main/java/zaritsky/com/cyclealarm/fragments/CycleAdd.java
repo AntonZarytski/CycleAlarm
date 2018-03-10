@@ -39,14 +39,13 @@ public class CycleAdd extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.cycle_editor_recycler, container, false);
-        cycle = new Cycle();
         recyclerView = view.findViewById(R.id.cycles_add_recycler_view);
         nameOfCycle = view.findViewById(R.id.name_of_cycle_text_view);
         saveCycle = view.findViewById(R.id.save_cycle_button);
         saveCycle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cycle.setName(nameOfCycle.getText().toString());
+                cycle = new Cycle(nameOfCycle.getText().toString());
                 cycle.addAllToCycle(tempArr);
                 cycleList.addToCycles(cycle);
                 new Thread(new Runnable() {
@@ -103,7 +102,8 @@ public class CycleAdd extends Fragment {
                     if (typesList.size() > 0) {
                         name.setText(typesList.get(numberOfType).getName());
                         wakeup.setText(typesList.get(numberOfType).getTimeOfWakeUp());
-                        color.setBackgroundColor(typesList.get(numberOfType).getColor());
+                        name.setBackgroundColor(typesList.get(numberOfType).getColor());
+                        wakeup.setBackgroundColor(typesList.get(numberOfType).getColor());
                         //cycle.addToCycle(typesList.get(numberOfType), tempPosition);
                         tempArr[tempPosition]=typesList.get(numberOfType);
                         numberOfType++;

@@ -1,5 +1,6 @@
 package zaritsky.com.cyclealarm.models;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class Alarm extends BroadcastReceiver implements Serializable{
     private Calendar timeOfActiveCalendar;
     private AlarmManager alarmManager;
@@ -58,6 +58,7 @@ public class Alarm extends BroadcastReceiver implements Serializable{
 //    public void setTimeOfActive(Date timeOfActive) {
 //        this.timeOfActive = timeOfActive;
 //    }
+    @SuppressLint("NewApi")
     public String getFormatedTime(){
         return new SimpleDateFormat("H:mm",
                 new Locale("ru", "RU")).format(timeOfActiveCalendar.getTime());

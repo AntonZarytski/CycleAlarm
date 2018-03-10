@@ -8,7 +8,7 @@ import java.util.List;
 
 public class AlarmList implements Serializable {
     private static AlarmList ourInstance = null;
-    private Context context;
+    private transient Context context;
     private List<Alarm> alarmList;
 
     public static AlarmList getInstance(Context context) {

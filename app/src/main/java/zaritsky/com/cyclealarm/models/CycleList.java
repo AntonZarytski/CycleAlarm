@@ -2,12 +2,13 @@ package zaritsky.com.cyclealarm.models;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CycleList {
+public class CycleList implements Serializable{
     private List<Cycle> cycleList;
-    private Context context;
+    private transient Context context;
     private static CycleList ourInstance = null;
 
     public static CycleList getInstance(Context context) {
