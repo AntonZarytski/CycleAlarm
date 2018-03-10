@@ -37,6 +37,7 @@ public class EditTypeDay extends Fragment {
         timeWakeUp = view.findViewById(R.id.time_to_wake_up);
         timeWakeUp.setIs24HourView(true);
         saveButton = view.findViewById(R.id.save_type_button);
+        final int[] tempcolor = new int[1];
         final ColorPicker cp = new ColorPicker(getActivity(), 0,0,0,0);
         colorOfType.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +49,7 @@ public class EditTypeDay extends Fragment {
             @Override
             public void onColorChosen(@ColorInt int color) {
                 colorOfType.setBackgroundColor(color);
+                tempcolor[0] = color;
                 cp.closeOptionsMenu();
             }
         });
@@ -56,7 +58,7 @@ public class EditTypeDay extends Fragment {
             public void onClick(View v) {
                 @SuppressLint({"NewApi", "LocalSuppress"})
                 Calendar calendar = Calendar.getInstance();
-                typeOfDay = new TypeOfDay(nameOfType.getText().toString(),calendar,  colorOfType.getSolidColor());
+                typeOfDay = new TypeOfDay(nameOfType.getText().toString(),calendar,  tempcolor[0]);
                 typesList.addType(typeOfDay);
             }
         });

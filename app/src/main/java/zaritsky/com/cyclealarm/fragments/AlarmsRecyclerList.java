@@ -31,7 +31,6 @@ import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Alarm;
 import zaritsky.com.cyclealarm.models.AlarmList;
 
-import static android.provider.Telephony.Mms.Part.FILENAME;
 
 public class AlarmsRecyclerList extends Fragment {
     private RecyclerView recyclerView;
@@ -71,21 +70,7 @@ public class AlarmsRecyclerList extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final AlarmList alarms = AlarmList.getInstance(getContext());
-
-                try {
-                    File file = new File(getActivity().getApplicationContext().getFilesDir(), FILENAME);
-                    if (!file.exists()) {
-                        return;
-                    }
-                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-                    alarmList = (List<Alarm>) ois.readObject();
-                    if (alarmList==null){
-                        alarmList = new ArrayList<>();
-                    }
-                    alarms.setAlarmList(alarmList);
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+        alarmList=alarms.getAlarmList();
         adapter = new AlarmAdapter(alarmList, getContext());
     }
 

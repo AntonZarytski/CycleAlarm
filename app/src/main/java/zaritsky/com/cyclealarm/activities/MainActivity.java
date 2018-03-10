@@ -14,6 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.fragments.AlarmAdd;
 import zaritsky.com.cyclealarm.fragments.AlarmsRecyclerList;
@@ -22,15 +29,22 @@ import zaritsky.com.cyclealarm.fragments.CycleRecyclerList;
 import zaritsky.com.cyclealarm.fragments.EditTypeDay;
 import zaritsky.com.cyclealarm.fragments.TypeDayRecyclerList;
 import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
+import zaritsky.com.cyclealarm.models.Alarm;
+import zaritsky.com.cyclealarm.models.AlarmList;
+import zaritsky.com.cyclealarm.models.Cycle;
+import zaritsky.com.cyclealarm.models.CycleList;
 
 public class MainActivity extends AppCompatActivity implements AbleToChangeFragment {
+    private final String ALARMFILE = "AlarmsList";
+    private final String CYCLEFILE = "CycleList";
     private FragmentManager fm;
     private AlarmsRecyclerList alarmsListFragment;
     private Calendar calendarFragment;
     private CycleRecyclerList cycleRecyclerList;
     private Fragment editTypeDay;
     private TypeDayRecyclerList typesList;
-
+    private AlarmList alarmList;
+    private CycleList cycleList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,18 +55,35 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         calendarFragment = new Calendar();
         cycleRecyclerList = new CycleRecyclerList();
         typesList = new TypeDayRecyclerList();
-
         editTypeDay = new EditTypeDay();
-//        testBtnAlarm = findViewById(R.id.test_active_alarm);
-//
-//        testBtnAlarm.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, ArarmIsActive.class);
-//                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                getApplicationContext().startActivity(intent);
-//            }
-//        });
+        try {
+            alarmList = AlarmList.getInstance(getApplicationContext());
+            cycleList = CycleList.getInstance(getApplicationContext());
+            List<Alarm> alarms;
+            File alarmsSavePath = new File(getApplicationContext().getFilesDir(), ALARMFILE);
+            File cyclesSavePath = new File(getApplicationContext().getFilesDir(), CYCLEFILE);
+            if (!alarmsSavePath.exists()) {
+                return;
+            }
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ALARMFILE));
+            alarms = (List<Alarm>) ois.readObject();
+            if (alarms ==null){
+                alarms = new ArrayList<>();
+            }
+            List<Cycle> cycles;
+            if (!cyclesSavePath.exists()) {
+                return;
+            }
+            ois = new ObjectInputStream(new FileInputStream(cyclesSavePath));
+            cycles = (List<Cycle>) ois.readObject();
+            if (cycles==null){
+               cycles = new ArrayList<>();
+            }
+            cycleList.setCycleList(cycles);
+            alarmList.setAlarmList(alarms);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

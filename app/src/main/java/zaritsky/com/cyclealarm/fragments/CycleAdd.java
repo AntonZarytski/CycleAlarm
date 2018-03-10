@@ -26,6 +26,7 @@ import zaritsky.com.cyclealarm.models.TypesList;
 import static android.provider.Telephony.Mms.Part.FILENAME;
 
 public class CycleAdd extends Fragment {
+    private final String CYCLEFILE = "CycleList";
     private Button saveCycle;
     private TextView nameOfCycle;
     private RecyclerView recyclerView;
@@ -48,20 +49,19 @@ public class CycleAdd extends Fragment {
                 cycle.setName(nameOfCycle.getText().toString());
                 cycle.addAllToCycle(tempArr);
                 cycleList.addToCycles(cycle);
-                //TODO сохранение списка листа во внутреннюю память
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            ObjectOutputStream oos = new ObjectOutputStream(getActivity().openFileOutput(FILENAME, Context.MODE_PRIVATE));
-//                            oos.writeObject(cycleList.getCycleList());
-//                            oos.flush();
-//                            oos.close();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }).start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ObjectOutputStream oos = new ObjectOutputStream(getActivity().openFileOutput(CYCLEFILE, Context.MODE_PRIVATE));
+                            oos.writeObject(cycleList.getCycleList());
+                            oos.flush();
+                            oos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         });
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 7);

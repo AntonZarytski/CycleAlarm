@@ -38,6 +38,7 @@ import static android.provider.Telephony.Mms.Part.FILENAME;
 
 public class AlarmAdd extends Fragment {
     private static final String CURRENT_ALARM_POSITION = "CURRENT_ALARM_POSITION";
+    private final String ALARMFILE = "AlarmsList";
     private final String LOG_TAG = "myLogs";
     private Alarm currentAlarm;
     private AlarmList alarmList;
@@ -117,7 +118,7 @@ public class AlarmAdd extends Fragment {
                     @Override
                     public void run() {
                         try {
-                            ObjectOutputStream oos = new ObjectOutputStream(getActivity().openFileOutput(FILENAME, Context.MODE_PRIVATE));
+                            ObjectOutputStream oos = new ObjectOutputStream(getActivity().openFileOutput(ALARMFILE, Context.MODE_PRIVATE));
                             oos.writeObject(alarmList.getAlarmList());
                             oos.flush();
                             oos.close();
