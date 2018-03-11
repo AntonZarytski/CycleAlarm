@@ -174,13 +174,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/deactive_alarm" />
+            android:background="@color/cardview_shadow_end_color"
+            android:text="@string/cancel_text" />
 
         <Button
             android:id="@+id/sleep_five_minutes_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/cardview_shadow_end_color"
             android:text="@string/sleep_five_minutes" />
     </LinearLayout>
 

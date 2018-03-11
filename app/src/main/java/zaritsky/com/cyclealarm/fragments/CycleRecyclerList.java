@@ -121,12 +121,12 @@ public class CycleRecyclerList extends Fragment{
         }
 
         @Override
-        public void onBindViewHolder(CycleViewHolder holder, int position) {
+        public void onBindViewHolder(CycleViewHolder holder, final int position) {
             holder.cycleName.setText(cycleList.get(position).getName());
             holder.cycleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CycleAdd cycleAdd = new CycleAdd();
+                    CycleAdd cycleAdd = CycleAdd.newInstance(position);
                     callBackAvtivity.replaceFragments(R.id.content_main, cycleAdd);
                 }
             });

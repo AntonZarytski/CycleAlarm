@@ -26,6 +26,7 @@
             android:id="@+id/save_cycle_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/cardview_shadow_end_color"
             android:layout_below="@id/cycles_add_recycler_view"
             android:text="@string/save_alarm" />
     </RelativeLayout>

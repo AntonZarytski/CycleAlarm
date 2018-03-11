@@ -19,7 +19,8 @@
     <string name="humidity">Влажность:</string>
     <string name="cloud">Облачность:</string>
     <string name="power">Давление:</string>
-    <string name="deactive_alarm">Отмена</string>
+    <string name="ok_text">Ок</string>
+    <string name="cancel_text">Отмена</string>
     <string name="open_weather_map_app_id">e8e2cd56b5ff9dc03867cb204da1f6d9</string>
     <string name="place_not_found">Такой город не найден</string>
     <string name="rain_volume">Осадки</string>
@@ -35,6 +36,9 @@
     <string name="weather_drizzle">&#xf01c;</string>
     <string name="period_of_recycler">Период повтора</string>
     <string name="setting_type_of_day">Настройка дня</string>
+    <string name="enter_text">Введите текст</string>
+    <string name="name">Имя:</string>
+    <string name="color">Цвет:</string>
 
 
 </resources>

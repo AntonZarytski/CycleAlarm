@@ -25,11 +25,10 @@ import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.services.WeatherDataLoader;
-import zaritsky.com.cyclealarm.fragments.AlarmAdd;
 import zaritsky.com.cyclealarm.fragments.AlarmsRecyclerList;
 import zaritsky.com.cyclealarm.fragments.Calendar;
 import zaritsky.com.cyclealarm.fragments.CycleRecyclerList;
-import zaritsky.com.cyclealarm.fragments.EditTypeDay;
+import zaritsky.com.cyclealarm.fragments.TypeDayAdd;
 import zaritsky.com.cyclealarm.fragments.TypeDayRecyclerList;
 import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Alarm;
@@ -127,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         calendarFragment = new Calendar();
         cycleRecyclerList = new CycleRecyclerList();
         typesList = new TypeDayRecyclerList();
-        editTypeDay = new EditTypeDay();
+        editTypeDay = new TypeDayAdd();
     }
 
     @Override
@@ -175,9 +174,9 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     }
 
     @Override
-    public void onSelectedFragment(int position) {
-        AlarmAdd alarm = AlarmAdd.newInstance(position);
-        replaceFragments(R.id.content_main, alarm);
+    public void onSelectedFragment(Fragment fragment, int position) {
+        //AlarmAdd alarm = AlarmAdd.newInstance(position);
+        replaceFragments(R.id.content_main, fragment);
     }
 
     public void onStartService() {

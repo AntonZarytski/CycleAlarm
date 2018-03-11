@@ -20,6 +20,10 @@ public class TypesList {
         return ourInstance;
     }
 
+    public static TypesList getOurInstance() {
+        return ourInstance;
+    }
+
     private TypesList(Context context) {
         types = new ArrayList<>();
         cycleDataSource = new CycleDataSource(context);

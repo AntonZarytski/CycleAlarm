@@ -20,14 +20,17 @@ import java.util.Locale;
 
 public class Alarm extends BroadcastReceiver implements Serializable{
     private Calendar timeOfActiveCalendar;
-    private AlarmManager alarmManager;
     private String note;
     private List<Date> datesOfActive;
     private int awekingImageId;
     private int weatherImageId;
-    private int preAlarmMusicId;
+    private boolean isMusic;
+    private boolean isVibro;
+    private boolean isSmoothWakeUp;
+    private boolean isScoringOfTime;
+    private int smoothMusicId;
     private int alarmMusicId;
-    private int volOfAlarmMusic;
+    private int volumeOfAlarmMusic;
     private int forceOfVibro;
     private boolean isActive;
     private boolean isOn;
@@ -63,6 +66,15 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         return new SimpleDateFormat("H:mm",
                 new Locale("ru", "RU")).format(timeOfActiveCalendar.getTime());
     }
+
+    public Calendar getTimeOfActiveCalendar() {
+        return timeOfActiveCalendar;
+    }
+
+    public void setTimeOfActiveCalendar(Calendar timeOfActiveCalendar) {
+        this.timeOfActiveCalendar = timeOfActiveCalendar;
+    }
+
     public String getNote() {
         return note;
     }
@@ -95,12 +107,44 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         this.weatherImageId = weatherImageId;
     }
 
-    public int getPreAlarmMusicId() {
-        return preAlarmMusicId;
+    public boolean isMusic() {
+        return isMusic;
     }
 
-    public void setPreAlarmMusicId(int preAlarmMusicId) {
-        this.preAlarmMusicId = preAlarmMusicId;
+    public void setMusic(boolean music) {
+        isMusic = music;
+    }
+
+    public boolean isVibro() {
+        return isVibro;
+    }
+
+    public void setVibro(boolean vibro) {
+        isVibro = vibro;
+    }
+
+    public boolean isSmoothWakeUp() {
+        return isSmoothWakeUp;
+    }
+
+    public void setSmoothWakeUp(boolean smoothWakeUp) {
+        isSmoothWakeUp = smoothWakeUp;
+    }
+
+    public boolean isScoringOfTime() {
+        return isScoringOfTime;
+    }
+
+    public void setScoringOfTime(boolean scoringOfTime) {
+        isScoringOfTime = scoringOfTime;
+    }
+
+    public int getSmoothMusicId() {
+        return smoothMusicId;
+    }
+
+    public void setSmoothMusicId(int smoothMusicId) {
+        this.smoothMusicId = smoothMusicId;
     }
 
     public int getAlarmMusicId() {
@@ -111,12 +155,12 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         this.alarmMusicId = alarmMusicId;
     }
 
-    public int getVolOfAlarmMusic() {
-        return volOfAlarmMusic;
+    public int getVolumeOfAlarmMusic() {
+        return volumeOfAlarmMusic;
     }
 
-    public void setVolOfAlarmMusic(int volOfAlarmMusic) {
-        this.volOfAlarmMusic = volOfAlarmMusic;
+    public void setVolumeOfAlarmMusic(int volumeOfAlarmMusic) {
+        this.volumeOfAlarmMusic = volumeOfAlarmMusic;
     }
 
     public int getForceOfVibro() {
@@ -131,12 +175,11 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         return isActive;
     }
 
-    public Calendar getCalendar() {
-        return timeOfActiveCalendar;
+    public boolean isOn() {
+        return isOn;
     }
 
-    public void setCalendar(Calendar calendar) {
-        this.timeOfActiveCalendar = calendar;
+    public void setOn(boolean on) {
+        isOn = on;
     }
-
 }

@@ -390,6 +390,7 @@
             android:id="@+id/save_alarm_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/cardview_shadow_end_color"
             android:text="@string/save_alarm"/>
     </LinearLayout>
 

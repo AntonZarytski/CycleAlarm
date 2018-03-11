@@ -91,7 +91,7 @@ public class AlarmsRecyclerList extends Fragment {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
-        public void onBindViewHolder(final AlarmViewHolder holder, int position) {
+        public void onBindViewHolder(final AlarmViewHolder holder, final int position) {
             final Alarm alarm = alarmList.get(position);
             holder.timeOfAlarm.setText(alarm.getFormatedTime());
             holder.daysOfActive.setText("Пн Вт Ср Чт Пт Сб Вс"/*alarm.getDatesOfActive()*/);
@@ -115,7 +115,8 @@ public class AlarmsRecyclerList extends Fragment {
             holder.alarmView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callBackAvtivity.onSelectedFragment(holder.getAdapterPosition());
+                    AlarmAdd alarm = AlarmAdd.newInstance(position);
+                    callBackAvtivity.onSelectedFragment(alarm, holder.getAdapterPosition());
                     /*Toast toast = Toast.makeText(getContext(), "На фрагмент будильника", Toast.LENGTH_LONG);
                     toast.show();*/
                 }

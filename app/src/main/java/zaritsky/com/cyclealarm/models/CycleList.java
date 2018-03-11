@@ -18,6 +18,10 @@ public class CycleList implements Serializable{
         return ourInstance;
     }
 
+    public static CycleList getOurInstance() {
+        return ourInstance;
+    }
+
     private CycleList(Context context) {
         cycleList = new ArrayList<>();
     }

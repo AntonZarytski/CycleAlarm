@@ -38,7 +38,7 @@ public class WeatherDataLoader extends IntentService {
     private static final String NEW_LINE = "\n";
     private static final int ALL_GOOD = 200;
     private LocationManager locationManager;
-    private JSONObject jsonObject;
+    private static JSONObject jsonObject;
 
     private LocationListener locationListener = new LocationListener() {
 
@@ -154,6 +154,10 @@ public class WeatherDataLoader extends IntentService {
     @Override
     public void onDestroy() {
         Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+    }
+
+    public static JSONObject getJsonObject() {
+        return jsonObject;
     }
 }
 

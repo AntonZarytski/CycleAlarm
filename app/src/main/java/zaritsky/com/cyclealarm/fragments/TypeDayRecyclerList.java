@@ -49,7 +49,7 @@ public class TypeDayRecyclerList extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditTypeDay editTypeDay = new EditTypeDay();
+                TypeDayAdd editTypeDay = new TypeDayAdd();
                 callBackAvtivity.replaceFragments(R.id.content_main, editTypeDay);
             }
         });
@@ -74,7 +74,7 @@ public class TypeDayRecyclerList extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final TypeDayViewHolder holder, int position) {
+        public void onBindViewHolder(final TypeDayViewHolder holder, final int position) {
             TypeOfDay current = types.get(position);
             holder.colorOfType.setBackgroundColor(current.getColor());
             holder.nameOfType.setText(current.getName());
@@ -82,7 +82,8 @@ public class TypeDayRecyclerList extends Fragment {
             holder.typeElement.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callBackAvtivity.onSelectedFragment(holder.getAdapterPosition());
+                    TypeDayAdd type = TypeDayAdd.newInstance(position);
+                    callBackAvtivity.onSelectedFragment(type, position);
                 }
             });
         }

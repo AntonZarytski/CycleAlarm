@@ -7,5 +7,5 @@ public interface AbleToChangeFragment {
     void removeFragment(Fragment removingFragment);
     void addFragment(@IdRes int containerViewId, Fragment addingFragment);
     void replaceFragments(@IdRes int containerViewId, Fragment newFragment);
-    void onSelectedFragment(int position);
+    void onSelectedFragment(Fragment fragment, int position);
 }

@@ -27,6 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/cycles_add_recycler_view"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/cardview_shadow_end_color"
             android:text="@string/save_alarm" />
     </RelativeLayout>
 </ScrollView>

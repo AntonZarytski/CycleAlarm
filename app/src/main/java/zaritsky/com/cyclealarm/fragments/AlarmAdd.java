@@ -4,6 +4,7 @@ package zaritsky.com.cyclealarm.fragments;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.icu.util.TimeZone;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -61,12 +64,13 @@ public class AlarmAdd extends Fragment {
     private Switch onSmoothWake;
     private TextView nameOfSmoothMelody;
     private Switch onScoringOfTime;
-
+    private LayoutInflater inflater;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.alarm_add_fragment, container, false);
+        this.inflater=inflater;
         alarmList = AlarmList.getInstance(getContext());
         am = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
         initViews(view);
@@ -113,6 +117,12 @@ public class AlarmAdd extends Fragment {
                 calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.set(Calendar.MINUTE, timePicker.getMinute());
                 currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString());
+                currentAlarm.setMusic(onSound.getSplitTrack());
+                currentAlarm.setVibro(onVibro.getSplitTrack());
+                currentAlarm.setSmoothWakeUp(onSmoothWake.getSplitTrack());
+                currentAlarm.setScoringOfTime(onScoringOfTime.getSplitTrack());
+                currentAlarm.setVolumeOfAlarmMusic(volumeOfSound.getProgress());
+                currentAlarm.setForceOfVibro(powerOfVibro.getProgress());
                 alarmList.addAlarm(currentAlarm);
                 new Thread(new Runnable() {
                     @Override
@@ -135,6 +145,52 @@ public class AlarmAdd extends Fragment {
                 am.set(AlarmManager.RTC_WAKEUP, min, pIntent1);
             }
         });
+        nameOfAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(nameOfAlarm);
+            }
+        });
+        notificationOfAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(notificationOfAlarm);
+            }
+        });
+
+    }
+
+    private void showDialog(final TextView textView) {
+        //Получаем вид с файла prompt.xml, который применим для диалогового окна:
+        View dialog = inflater.inflate(R.layout.edit_dialog, null);
+        //Создаем AlertDialog
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());
+        //Настраиваем xml для нашего AlertDialog:
+        mDialogBuilder.setView(dialog);
+        //Настраиваем отображение поля для ввода текста в открытом диалоге:
+        final EditText userInput = dialog.findViewById(R.id.edit_text_dialog);
+        //Настраиваем сообщение в диалоговом окне:
+        mDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                //Вводим текст и отображаем в строке ввода на основном экране:
+                                textView.setText(userInput.getText());
+                            }
+                        })
+                .setNegativeButton("Отмена",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+        //Создаем Alert
+        // Dialog:
+        AlertDialog alertDialog = mDialogBuilder.create();
+
+        //и отображаем его:
+        alertDialog.show();
     }
 
     public static AlarmAdd newInstance(int position) {
