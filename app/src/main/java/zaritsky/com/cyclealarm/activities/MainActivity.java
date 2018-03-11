@@ -1,6 +1,7 @@
 package zaritsky.com.cyclealarm.activities;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
+import zaritsky.com.cyclealarm.services.WeatherDataLoader;
 import zaritsky.com.cyclealarm.fragments.AlarmAdd;
 import zaritsky.com.cyclealarm.fragments.AlarmsRecyclerList;
 import zaritsky.com.cyclealarm.fragments.Calendar;
@@ -35,8 +38,9 @@ import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
 
 public class MainActivity extends AppCompatActivity implements AbleToChangeFragment {
-    private final String ALARMFILE = "AlarmsList";
-    private final String CYCLEFILE = "CycleList";
+    public final static String ALARMFILE = "AlarmsList";
+    public final static String CYCLEFILE = "CycleList";
+    public final static String CITYFORWEATHER = "CityForWeather";
     private FragmentManager fm;
     private AlarmsRecyclerList alarmsListFragment;
     private Calendar calendarFragment;
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
                 return true;
             }
         });
-
+        onStartService();
 
     }
 
@@ -176,4 +180,15 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         replaceFragments(R.id.content_main, alarm);
     }
 
+    public void onStartService() {
+        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getBaseContext(), WeatherDataLoader.class);
+        intent.putExtra(CITYFORWEATHER,"DATA_NEED");
+        startService(intent);
+    }
+
+    public void onStopService() {
+        Intent intent = new Intent(getBaseContext(), WeatherDataLoader.class);
+        stopService(intent);
+    }
 }

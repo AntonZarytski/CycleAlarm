@@ -3,11 +3,9 @@ package zaritsky.com.cyclealarm.activities;
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -17,12 +15,11 @@ import java.util.Date;
 import java.util.Locale;
 
 import zaritsky.com.cyclealarm.R;
-import zaritsky.com.cyclealarm.models.WeatherDataLoader;
 import zaritsky.com.cyclealarm.models.WeatherMap;
 
 public class ArarmIsActive extends AppCompatActivity  {
     private static final String FONT_FILENAME = "fonts/weather.ttf";
-    private final Handler handler = new Handler();
+//    private final Handler handler = new Handler();
     private TextView cityName;
     private TextView temperature;
     private TextView wind;
@@ -41,7 +38,7 @@ public class ArarmIsActive extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ararm_is_active);
         initViews();
-        updateWeatherData("Minsk");
+//        updateWeatherData("Minsk");
     }
 
     private void initViews() {
@@ -60,33 +57,33 @@ public class ArarmIsActive extends AppCompatActivity  {
 
     }
 
-    private void updateWeatherData(final String city) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final JSONObject json
-                        = WeatherDataLoader.getJSONData(getApplicationContext(), city);
-                if (json == null) {
-                    handler.post(new Runnable() {
-                        @SuppressLint("ResourceType")
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    getString(R.string.place_not_found),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }else {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            renderWeather(json);
-                        }
-                    });
-                }
-            }
-        }).start();
-    }
+//    private void updateWeatherData(final String city) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                final JSONObject json
+//                        = WeatherDataLoader.getJSONData(getApplicationContext(), city);
+//                if (json == null) {
+//                    handler.post(new Runnable() {
+//                        @SuppressLint("ResourceType")
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(getApplicationContext(),
+//                                    getString(R.string.place_not_found),
+//                                    Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//                }else {
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            renderWeather(json);
+//                        }
+//                    });
+//                }
+//            }
+//        }).start();
+//    }
 
     @SuppressLint("SetTextI18n")
     private void renderWeather(JSONObject json) {
