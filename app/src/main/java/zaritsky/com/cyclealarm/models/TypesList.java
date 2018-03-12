@@ -44,6 +44,14 @@ public class TypesList {
         cycleDataSource.deleteType(type);
         cycleDataSource.close();
     }
+    public void editType(TypeOfDay type, int position){
+        TypeOfDay temp = types.remove(position);
+        types.add(position, type);
+        cycleDataSource.open();
+        cycleDataSource.deleteType(temp);
+        cycleDataSource.addType(type);
+        cycleDataSource.close();
+    }
 
     public List<TypeOfDay> getTypes() {
         return types;

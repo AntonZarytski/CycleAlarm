@@ -85,7 +85,9 @@ public class CycleAdd extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         return view;
     }
+    private void setCurrentParameters(){
 
+    }
     public static CycleAdd newInstance(int position) {
         CycleAdd fragment = new CycleAdd();
         Bundle args = new Bundle();

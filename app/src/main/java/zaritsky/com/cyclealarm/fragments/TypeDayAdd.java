@@ -29,6 +29,7 @@ public class TypeDayAdd extends Fragment {
     final static String CURRENT_TYPE_POSITION = "CURRENT_TYPE_POSITION";
     TypeOfDay typeOfDay;
     TextView nameOfType;
+    int position;
     ImageView colorOfType;
     TimePicker timeWakeUp;
     Button saveButton;
@@ -46,6 +47,10 @@ public class TypeDayAdd extends Fragment {
         timeWakeUp = view.findViewById(R.id.time_to_wake_up);
         timeWakeUp.setIs24HourView(true);
         saveButton = view.findViewById(R.id.save_type_button);
+        if (typeOfDay!=null){
+            position = getArguments().getInt(CURRENT_TYPE_POSITION);
+            setCurrentParameters();
+        }
         final int[] tempcolor = new int[1];
         final ColorPicker cp = new ColorPicker(getActivity(), 0, 0, 0, 0);
         colorOfType.setOnClickListener(new View.OnClickListener() {
@@ -65,10 +70,13 @@ public class TypeDayAdd extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                @SuppressLint({"NewApi", "LocalSuppress"})
-                Calendar calendar = Calendar.getInstance();
-                typeOfDay = new TypeOfDay(nameOfType.getText().toString(), calendar, tempcolor[0]);
-                typesList.addType(typeOfDay);
+                if(typeOfDay==null) {
+                    @SuppressLint({"NewApi", "LocalSuppress"})
+                    Calendar calendar = Calendar.getInstance();
+                    typeOfDay = new TypeOfDay(nameOfType.getText().toString(), calendar, tempcolor[0]);
+                    typesList.addType(typeOfDay);
+                }else
+                    typesList.editType(typeOfDay, position);
             }
         });
         nameOfType.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +87,17 @@ public class TypeDayAdd extends Fragment {
         });
         return view;
     }
-
+    @SuppressLint("NewApi")
+    private void setCurrentParameters(){
+        nameOfType.setText(typeOfDay.getName());
+        colorOfType.setBackgroundColor(typeOfDay.getColor());
+        String wakeUp = typeOfDay.getTimeOfWakeUp();
+        String[] time = wakeUp.split(":");
+        int hour = Integer.valueOf(time[0]);
+        int minute = Integer.valueOf(time[1]);
+        timeWakeUp.setHour(hour);
+        timeWakeUp.setMinute(minute);
+    }
     public static TypeDayAdd newInstance(int position) {
         TypeDayAdd fragment = new TypeDayAdd();
         Bundle args = new Bundle();

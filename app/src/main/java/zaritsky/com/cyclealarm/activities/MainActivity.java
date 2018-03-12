@@ -1,10 +1,17 @@
 package zaritsky.com.cyclealarm.activities;
 
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -12,15 +19,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
@@ -37,6 +48,9 @@ import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
 
 public class MainActivity extends AppCompatActivity implements AbleToChangeFragment {
+    private static final String LOG = "GPS";
+    private static final String LON_KEY = "LON_KEY";
+    private static final String LAT_KEY = "LAT_KEY";
     public final static String ALARMFILE = "AlarmsList";
     public final static String CYCLEFILE = "CycleList";
     public final static String CITYFORWEATHER = "CityForWeather";
@@ -48,11 +62,15 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     private TypeDayRecyclerList typesList;
     private AlarmList alarmList;
     private CycleList cycleList;
-
+    private LocationManager locationManager;
+    private static String lat;
+    private static String lon;
+    private boolean coordinatesWasGot = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
             alarmList = AlarmList.getInstance(getApplicationContext());
             cycleList = CycleList.getInstance(getApplicationContext());
@@ -117,8 +135,29 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
                 return true;
             }
         });
-        onStartService();
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                1000 * 10, 10, locationListener);
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                locationListener);
+        //onStartService();
     }
 
     private void initFragments() {
@@ -181,13 +220,87 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
 
     public void onStartService() {
         Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getBaseContext(), WeatherDataLoader.class);
-        intent.putExtra(CITYFORWEATHER,"DATA_NEED");
-        startService(intent);
+            Intent intent = new Intent(getBaseContext(), WeatherDataLoader.class);
+            intent.putExtra(LON_KEY, lon);
+            intent.putExtra(LAT_KEY, lat);
+            startService(intent);
+
     }
 
     public void onStopService() {
         Intent intent = new Intent(getBaseContext(), WeatherDataLoader.class);
         stopService(intent);
     }
+
+
+
+    private LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            showLocation(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            checkEnabled();
+        }
+
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            checkEnabled();
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            showLocation(locationManager.getLastKnownLocation(provider));
+        }
+
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            if (provider.equals(LocationManager.GPS_PROVIDER)) {
+                Log.e(LOG, "Status: " + String.valueOf(status));
+            } else if (provider.equals(LocationManager.NETWORK_PROVIDER)) {
+                Log.e(LOG, "Status: " + String.valueOf(status));
+            }
+        }
+    };
+
+    private void showLocation(Location location) {
+        if (location == null)
+            return;
+        if (location.getProvider().equals(LocationManager.GPS_PROVIDER) || location.getProvider().equals(LocationManager.NETWORK_PROVIDER)) {
+            lon = String.valueOf(location.getLongitude());
+            lat = String.valueOf(location.getLatitude());
+            Log.e(LOG, "lon: " +  formatLocation(location));
+            Log.e(LOG, "lat: " +  formatLocation(location));
+            //coordinatesWasGot = true;
+            onStartService();
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private String formatLocation(Location location) {
+        if (location == null)
+            return "";
+        return String.format(
+                "Coordinates: lat = %1$.4f, lon = %2$.4f, time = %3$tF %3$tT",
+                location.getLatitude(), location.getLongitude(), new Date(
+                        location.getTime()));
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void checkEnabled() {
+        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
 }
+

@@ -29,6 +29,10 @@ public class CycleList implements Serializable{
     public void addToCycles(Cycle cycle){
         cycleList.add(cycle);
     }
+    public void editCycle(Cycle cycle, int position){
+        cycleList.remove(position);
+        cycleList.add(position, cycle);
+    }
     public void removeCycle(Cycle cycle){
         cycleList.remove(cycle);
     }

@@ -1,23 +1,31 @@
 package zaritsky.com.cyclealarm.services;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
@@ -30,8 +38,12 @@ public class WeatherDataLoader extends IntentService {
     //private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/forecast?id=%s&appid=%s";
     //определение погоды по координатам
     private static final String LOG = "GPS";
-    private static final String appId = "fac8298fbb01aea28d39b019a9839657";
-    private static final String OPEN_WEATHER_MAP_API = "http:// api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s";
+    private static final String LON_KEY = "LON_KEY";
+    private static final String LAT_KEY = "LAT_KEY";
+
+    private static final String appId = "e8e2cd56b5ff9dc03867cb204da1f6d9";
+    private static final String OPEN_WEATHER_MAP_API = "http://api.openweathermap.org/data/2.5/forecast?lat=%s&lon=%s&appid=%s";
+
     private static String lat;
     private static String lon;
     private static final String RESPONSE = "cod";
@@ -40,60 +52,9 @@ public class WeatherDataLoader extends IntentService {
     private LocationManager locationManager;
     private static JSONObject jsonObject;
 
-    private LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            setCoordinates(location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-
-        @SuppressLint("MissingPermission")
-        @Override
-        public void onProviderEnabled(String provider) {
-            setCoordinates(locationManager.getLastKnownLocation(provider));
-        }
-
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-//            if (provider.equals(LocationManager.GPS_PROVIDER)) {
-//               String.valueOf(status);
-//            } else if (provider.equals(LocationManager.NETWORK_PROVIDER)) {
-//               String.valueOf(status);
-//            }
-//        }
-        }
-    };
 
     public WeatherDataLoader() {
         super("name");
-    }
-
-
-    private void setCoordinates(Location location) {
-        if (location == null)
-            return;
-        if (location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
-            lat = String.valueOf(location.getLatitude());
-            lon = String.valueOf(location.getLongitude());
-        } else if (location.getProvider().equals(LocationManager.NETWORK_PROVIDER)) {
-            lat = String.valueOf(location.getLatitude());
-            lon = String.valueOf(location.getLongitude());
-        }
-    }
-
-    @SuppressLint("DefaultLocale")
-    private String formatLocation(Location location) {
-        if (location == null)
-            return "";
-        return String.format(
-                "Coordinates: lat = %1$.4f, lon = %2$.4f, time = %3$tF %3$tT",
-                location.getLatitude(), location.getLongitude(), new Date(
-                        location.getTime()));
     }
 
     //переход к настройкам и включению GPS
@@ -126,21 +87,18 @@ public class WeatherDataLoader extends IntentService {
                 return null;
             }
             return jsonObject;
-        } catch (Exception e) {
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    @SuppressLint("MissingPermission")
+
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-        locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                1000 * 10, 10, locationListener);
-        locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                locationListener);
+        Toast.makeText(this, "НАЧАЛО РАБОТЫ СЕРВИСА", Toast.LENGTH_SHORT).show();
+        lon = intent.getStringExtra(LON_KEY);
+        lat = intent.getStringExtra(LAT_KEY);
         jsonObject = getJSONData();
         Log.e(LOG, "lat" + lat + " lon " + lon + " JSONObject " + jsonObject.toString());
     }
@@ -148,16 +106,15 @@ public class WeatherDataLoader extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        lon = intent.getStringExtra(LON_KEY);
+        lat = intent.getStringExtra(LAT_KEY);
         return super.onStartCommand(intent, flags, startId);
     }
 
-    @Override
-    public void onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
-    }
 
     public static JSONObject getJsonObject() {
         return jsonObject;
     }
+
 }
 
