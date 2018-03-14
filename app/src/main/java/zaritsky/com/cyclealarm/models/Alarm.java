@@ -20,6 +20,7 @@ import java.util.Locale;
 
 public class Alarm extends BroadcastReceiver implements Serializable{
     private Calendar timeOfActiveCalendar;
+    private Cycle cycle;
     private String note;
     private List<Date> datesOfActive;
     private int awekingImageId;
