@@ -1,10 +1,13 @@
 package zaritsky.com.cyclealarm.widget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,69 +17,101 @@ import zaritsky.com.cyclealarm.models.AlarmList;
 
 
 class WidgetFactory implements RemoteViewsService.RemoteViewsFactory {
-    Context mcontext;
-    private List<String> datasForWidget;
-    private List<Alarm> alarms;
+    final String ACTION_ON_CLICK = "android.appwidget.action.APPWIDGET_UPDATE";
+    public final static String ITEM_POSITION = "item_position";
+    List<Alarm>alarms;
+    ArrayList<String> timeWakeUp;
+    ArrayList<String> notesAlarm;
+    ArrayList<Boolean> alarmIsOn;
+    Context context;
+    SimpleDateFormat sdf;
+    int widgetID;
 
-    public WidgetFactory(Context context, Intent intent) {
-        mcontext = context;
+    WidgetFactory(Context ctx, Intent intent) {
+        context = ctx;
+        sdf = new SimpleDateFormat("HH:mm:ss");
+        widgetID = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID);
     }
-    //что надо сделать при создании, например, создаем список наших заметок.
+
     @Override
     public void onCreate() {
-        alarms = AlarmList.getInstance(mcontext).getAlarmList();
-        datasForWidget = new ArrayList<>();
+        alarms = AlarmList.getInstance(context).getAlarmList();
+        timeWakeUp = new ArrayList<>();
+        notesAlarm = new ArrayList<>();
+        alarmIsOn = new ArrayList<>();
         for (int i = 0; i <alarms.size() ; i++) {
-            datasForWidget.add(alarms.get(i).getFormatedTime());
+            timeWakeUp.add(alarms.get(i).getFormatedTime());
+            notesAlarm.add(alarms.get(i).getNote());
+            alarmIsOn.add(alarms.get(i).isOn());
         }
+
     }
-    //вызывается, когда меняется набор данных (список), поэтому в нем загружаем наш список из базы.
-//перезаписываем данные в виджет
-    @Override
-    public void onDataSetChanged() {
-        datasForWidget.clear();
-        for (int i = 0; i <alarms.size() ; i++) {
-            datasForWidget.add(alarms.get(i).getFormatedTime());
-        }
-    }
-    //возвращает число элементов в Factory: у нас это — число элементов в списке.
+
     @Override
     public int getCount() {
-        return datasForWidget.size();
+        return timeWakeUp.size();
     }
-    //мы возвращаем null, что означает использование стандартного загрузочного View:
-//иначе позволяет задать его для настройки, вызывается перед каждым getViewAt().
-    @Override
-    public RemoteViews getLoadingView() {
-        return null;
-    }
-    //создаем ячейку по позиции position: она должна быть типа RemoteViews.
-    @Override
-    public RemoteViews getViewAt(int position) {
-        RemoteViews rView = new RemoteViews(mcontext.getPackageName(), R.layout.item_widget);
-        rView.setTextViewText(R.id.text_view_for_widget, datasForWidget.get(position));
-        Intent clickIntent = new Intent();
-        clickIntent.putExtra(CalendarWidget.DATA, datasForWidget.get(position));
-        rView.setOnClickFillInIntent(R.id.text_view_for_widget, clickIntent);
-        return rView;
-    }
-    //возвращает число типов элементов в Factory: у нас всегда одинаковая ячейка, поэтому 1.
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-    //возвращает id элемента по позиции в списке: делаем id, равным позиции в списке.
+
     @Override
     public long getItemId(int position) {
         return position;
     }
-    //возвращает true, если id всегда ссылается на тот же объект.
+
+    @Override
+    public RemoteViews getLoadingView() {
+        return null;
+    }
+
+    @Override
+    public RemoteViews getViewAt(int position) {
+        RemoteViews rView = new RemoteViews(context.getPackageName(),
+                R.layout.item_widget);
+        rView.setTextViewText(R.id.item_alarm_time_text, timeWakeUp.get(position));
+        rView.setTextViewText(R.id.item_alarm_cycle_text, notesAlarm.get(position));
+        if (alarms.get(position).isOn()){
+            rView.setImageViewResource(R.id.item_take_of_alarm, R.drawable.on);
+        }else {
+            rView.setImageViewResource(R.id.item_take_of_alarm, R.drawable.off);
+        }
+        Intent clickIntent = new Intent();
+        clickIntent.putExtra(ITEM_POSITION, position);
+        rView.setOnClickFillInIntent(R.id.item_alarm_time_text, clickIntent);
+        return rView;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
+
     @Override
     public boolean hasStableIds() {
         return true;
     }
-    //вызывается при отсоединении последнего RemoteViewsAdapter, привязанного к нему.
+
+    @Override
+    public void onDataSetChanged() {
+        timeWakeUp.clear();
+        notesAlarm.clear();
+        alarmIsOn.clear();
+        for (int i = 0; i <alarms.size() ; i++) {
+            timeWakeUp.add(alarms.get(i).getFormatedTime());
+            notesAlarm.add(alarms.get(i).getNote());
+            alarmIsOn.add(alarms.get(i).isOn());
+        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            timeWakeUp.add(sdf.format(new Date(System.currentTimeMillis())));
+//        }
+//        timeWakeUp.add(String.valueOf(hashCode()));
+//        timeWakeUp.add(String.valueOf(widgetID));
+//        for (int i = 3; i < 15; i++) {
+//            timeWakeUp.add("Item " + i);
+//        }
+    }
+
     @Override
     public void onDestroy() {
+
     }
 }

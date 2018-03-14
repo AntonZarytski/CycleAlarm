@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <ListView
-        android:id="@+id/list_view_for_widget"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:loopViews="true" />
-
+    android:background="#9999"
+    android:padding="5dp">
     <TextView
-        android:id="@+id/empty_view_for_widget"
+        android:id="@+id/tvUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#3300ff00"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge">
+    </TextView>
+    <ListView
+        android:id="@+id/lvList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_margin="4dp"
-        android:text="" />
-</LinearLayout>
+        android:layout_below="@id/tvUpdate">
+    </ListView>
+</RelativeLayout>
