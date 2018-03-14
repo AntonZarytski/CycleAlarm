@@ -2,6 +2,7 @@ package zaritsky.com.cyclealarm.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
@@ -62,6 +63,9 @@ public class TypeDayAdd extends Fragment {
         cp.setCallback(new ColorPickerCallback() {
             @Override
             public void onColorChosen(@ColorInt int color) {
+                if (color==0){
+                    color=Color.WHITE;
+                }
                 colorOfType.setBackgroundColor(color);
                 tempcolor[0] = color;
                 cp.closeOptionsMenu();

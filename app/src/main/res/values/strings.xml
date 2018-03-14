@@ -34,11 +34,14 @@
     <string name="weather_snowy">&#xf01b;</string>
     <string name="weather_thunder">&#xf01e;</string>
     <string name="weather_drizzle">&#xf01c;</string>
+
     <string name="period_of_recycler">Период повтора</string>
     <string name="setting_type_of_day">Настройка дня</string>
     <string name="enter_text">Введите текст</string>
     <string name="name">Имя:</string>
     <string name="color">Цвет:</string>
+    <string name="appwidget_text">CALENDAR</string>
+    <string name="add_widget">Add widget</string>
 
 
 </resources>

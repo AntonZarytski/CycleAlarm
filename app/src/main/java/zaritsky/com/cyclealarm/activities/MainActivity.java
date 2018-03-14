@@ -24,8 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,9 +33,9 @@ import java.util.Date;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
+import zaritsky.com.cyclealarm.fragments.CalendarFragment;
 import zaritsky.com.cyclealarm.services.WeatherDataLoader;
 import zaritsky.com.cyclealarm.fragments.AlarmsRecyclerList;
-import zaritsky.com.cyclealarm.fragments.Calendar;
 import zaritsky.com.cyclealarm.fragments.CycleRecyclerList;
 import zaritsky.com.cyclealarm.fragments.TypeDayAdd;
 import zaritsky.com.cyclealarm.fragments.TypeDayRecyclerList;
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     public final static String CITYFORWEATHER = "CityForWeather";
     private FragmentManager fm;
     private AlarmsRecyclerList alarmsListFragment;
-    private Calendar calendarFragment;
+    private CalendarFragment calendarFragment;
     private CycleRecyclerList cycleRecyclerList;
     private Fragment editTypeDay;
     private TypeDayRecyclerList typesList;
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
     private LocationManager locationManager;
     private static String lat;
     private static String lon;
-    private boolean coordinatesWasGot = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
             e.printStackTrace();
         }
 
-        fm = getSupportFragmentManager();
+
         initFragments();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -139,30 +137,10 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                1000 * 10, 10, locationListener);
-        locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                locationListener);
-        //onStartService();
-    }
-
     private void initFragments() {
+        fm = getSupportFragmentManager();
         alarmsListFragment = new AlarmsRecyclerList();
-        calendarFragment = new Calendar();
+        calendarFragment = new CalendarFragment();
         cycleRecyclerList = new CycleRecyclerList();
         typesList = new TypeDayRecyclerList();
         editTypeDay = new TypeDayAdd();
@@ -232,7 +210,26 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         stopService(intent);
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                1000 * 10, 10, locationListener);
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                locationListener);
+        //onStartService();
+    }
 
     private LocationListener locationListener = new LocationListener() {
 
