@@ -38,5 +38,14 @@ public class AlarmList implements Serializable {
     public void addAlarm(Alarm alarm){
         alarmList.add(alarm);
     }
-
+    public void removeAlarm(Alarm alarm){
+        alarmList.remove(alarm);
+    }
+    public void removeAlarm(int position){
+        alarmList.remove(position);
+    }
+    public void changeAlarm(Alarm newAlarm, int position){
+        removeAlarm(position);
+        alarmList.add(position, newAlarm);
+    }
 }

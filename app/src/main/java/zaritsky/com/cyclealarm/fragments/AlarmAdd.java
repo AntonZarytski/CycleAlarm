@@ -21,20 +21,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.models.Alarm;
 import zaritsky.com.cyclealarm.models.AlarmList;
 import zaritsky.com.cyclealarm.models.AlarmReceiver;
+import zaritsky.com.cyclealarm.models.Cycle;
+import zaritsky.com.cyclealarm.models.CycleList;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Telephony.Mms.Part.FILENAME;
@@ -44,6 +51,9 @@ public class AlarmAdd extends Fragment {
     private final String ALARMFILE = "AlarmsList";
     private final String LOG_TAG = "myLogs";
     private Alarm currentAlarm;
+    private List<Cycle> cycleList;
+    private Cycle currentCycle;
+    private int currentAlarmPosition;
     private AlarmList alarmList;
     private AlarmManager am;
     private Calendar calendar;
@@ -52,7 +62,7 @@ public class AlarmAdd extends Fragment {
     private TextView dataeOfNearestActive;
     private TextView nameOfAlarm;
     private TextView notificationOfAlarm;
-    private TextView periodOfRecycler;
+    private Spinner periodOfRecycler;
     private Switch onPause;
     private TextView durationOfPause;
     private Switch onSound;
@@ -70,12 +80,63 @@ public class AlarmAdd extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.alarm_add_fragment, container, false);
-        this.inflater=inflater;
+        this.inflater = inflater;
         alarmList = AlarmList.getInstance(getContext());
-        am = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
         initViews(view);
         initListeners();
+        if (currentAlarm != null) {
+            currentAlarmPosition = getArguments().getInt(CURRENT_ALARM_POSITION);
+            setCurrentParameters();
+        }
+        am = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+        cycleList = CycleList.getInstance(getContext()).getCycleList();
+        List<CharSequence> cyclesNames = new ArrayList<>();
+        for (int i = 0; i < cycleList.size(); i++) {
+            cyclesNames.add(cycleList.get(i).getName());
+        }
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, cyclesNames);
+        periodOfRecycler.setAdapter(adapter);
+        periodOfRecycler.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                currentCycle = cycleList.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //TODO цикл неделя
+                // currentCycle = cycleList.get(0);
+            }
+        });
         return view;
+    }
+
+    private void setCurrentParameters() {
+        String wakeUpTime[] = currentAlarm.getFormatedTime().split(":");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            timePicker.setHour(Integer.valueOf(wakeUpTime[0]));
+            timePicker.setMinute(Integer.valueOf(wakeUpTime[1]));
+        }
+        dataeOfNearestActive.setText("TODO ближайшая дата сработки");
+        nameOfAlarm.setText(currentAlarm.getName());
+        notificationOfAlarm.setText(currentAlarm.getNote());
+        currentCycle = currentAlarm.getDatesOfActiveCycle();
+        periodOfRecycler.setPrompt(currentCycle.getName());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            onPause.setChecked(currentAlarm.isPause());
+            onSound.setChecked(currentAlarm.isMusic());
+            onVibro.setChecked(currentAlarm.isVibro());
+            onSmoothWake.setChecked(currentAlarm.isSmoothWakeUp());
+            onScoringOfTime.setChecked(currentAlarm.isScoringOfTime());
+        }
+        durationOfPause.setText(String.valueOf(currentAlarm.getLongPause()));
+        nameOfSound.setText(currentAlarm.getNameOfMusic());
+        typeOfVibro.setText(currentAlarm.getNameOfVibroType());
+        nameOfSmoothMelody.setText(currentAlarm.getNameOfSmoothMusic());
+
+        volumeOfSound.setProgress(currentAlarm.getVolumeOfAlarmMusic());
+        powerOfVibro.setProgress(currentAlarm.getForceOfVibro());
     }
 
     private void initViews(View view) {
@@ -98,6 +159,7 @@ public class AlarmAdd extends Fragment {
         nameOfSmoothMelody = view.findViewById(R.id.smooth_stand_up_text_view);
         onScoringOfTime = view.findViewById(R.id.scoring_of_time_switch);
     }
+
     Intent createIntent(String action, String extra) {
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
         intent.setAction(action);
@@ -114,16 +176,36 @@ public class AlarmAdd extends Fragment {
                 //TODO сделать определение местоположения и определять временную зону
                 TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
                 calendar.setTimeZone(tz);
+
                 calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.set(Calendar.MINUTE, timePicker.getMinute());
-                currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString());
-                currentAlarm.setMusic(onSound.getSplitTrack());
-                currentAlarm.setVibro(onVibro.getSplitTrack());
-                currentAlarm.setSmoothWakeUp(onSmoothWake.getSplitTrack());
-                currentAlarm.setScoringOfTime(onScoringOfTime.getSplitTrack());
+
+                currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString(), currentCycle);
+
+                currentAlarm.setPause(onPause.isChecked());
+                currentAlarm.setMusic(onSound.isChecked());
+                currentAlarm.setVibro(onVibro.isChecked());
+                currentAlarm.setSmoothWakeUp(onSmoothWake.isChecked());
+                currentAlarm.setScoringOfTime(onScoringOfTime.isChecked());
+
+                currentAlarm.setName(nameOfAlarm.getText().toString());
+                dataeOfNearestActive.setText("TODO ближайшая дата сработки");
+                currentAlarm.setLongPause(5);
+                currentAlarm.setNameOfMusic("TODO имя музыки");
+                currentAlarm.setNameOfVibroType("TODO тип вибрации");
+                currentAlarm.setNameOfSmoothMusic("TODO имя предварительной мелодии");
+
+
                 currentAlarm.setVolumeOfAlarmMusic(volumeOfSound.getProgress());
                 currentAlarm.setForceOfVibro(powerOfVibro.getProgress());
-                alarmList.addAlarm(currentAlarm);
+
+                if (currentAlarm==null) {
+                    alarmList.addAlarm(currentAlarm);
+                    currentAlarm = null;
+                }else {
+                    alarmList.changeAlarm(currentAlarm, currentAlarmPosition);
+                    currentAlarm=null;
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -140,8 +222,8 @@ public class AlarmAdd extends Fragment {
                 Intent alarmIntent = createIntent("action 1", "extra 1");
                 PendingIntent pIntent1 = PendingIntent.getBroadcast(getContext(), 0, alarmIntent, 0);
                 //long hour = timePicker.getHour()*60000*60;
-                long min = timePicker.getMinute()*60000;
-                Log.d(LOG_TAG, "start from " + min +" mills ");
+                long min = timePicker.getMinute() * 60000;
+                Log.d(LOG_TAG, "start from " + min + " mills ");
                 am.set(AlarmManager.RTC_WAKEUP, min, pIntent1);
             }
         });
@@ -174,14 +256,14 @@ public class AlarmAdd extends Fragment {
                 .setCancelable(false)
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 //Вводим текст и отображаем в строке ввода на основном экране:
                                 textView.setText(userInput.getText());
                             }
                         })
                 .setNegativeButton("Отмена",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         });

@@ -94,7 +94,7 @@ public class AlarmsRecyclerList extends Fragment {
         public void onBindViewHolder(final AlarmViewHolder holder, final int position) {
             final Alarm alarm = alarmList.get(position);
             holder.timeOfAlarm.setText(alarm.getFormatedTime());
-            holder.daysOfActive.setText("Пн Вт Ср Чт Пт Сб Вс"/*alarm.getDatesOfActive()*/);
+            holder.daysOfActive.setText("Пн Вт Ср Чт Пт Сб Вс"/*alarm.getDatesOfActiveCycle()*/);
             final Switch activeAlarm = holder.onOffAlarmSwitch;
             activeAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)

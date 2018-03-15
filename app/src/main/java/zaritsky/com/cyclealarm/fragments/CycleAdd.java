@@ -21,41 +21,44 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
-import zaritsky.com.cyclealarm.models.AlarmList;
 import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 import zaritsky.com.cyclealarm.models.TypesList;
 
-import static android.provider.Telephony.Mms.Part.FILENAME;
-
 public class CycleAdd extends Fragment {
     private final String CYCLEFILE = "CycleList";
     private final static String CURRENT_CYCLE_POSITION = "CURRENT_CYCLE_POSITION";
-    private Cycle currentCycle;
     private Button saveCycle;
     private TextView nameOfCycle;
     private RecyclerView recyclerView;
     private TypesList typesList;
     private CycleAddAdapter adapter;
     private static TypeOfDay[] tempArr;
-    private Cycle cycle;
-    private CycleList cycleList = CycleList.getInstance(getContext());
+    private Cycle currentCycle;
+    private CycleList cycleList;
     private LayoutInflater inflater;
+    int currentCyclePosition;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.cycle_editor_recycler, container, false);
         this.inflater = inflater;
+        cycleList = CycleList.getInstance(getContext());
         recyclerView = view.findViewById(R.id.cycles_add_recycler_view);
         nameOfCycle = view.findViewById(R.id.name_of_cycle_text_view);
+        if (currentCycle!=null){
+            currentCyclePosition = getArguments().getInt(CURRENT_CYCLE_POSITION);
+            currentCycle=cycleList.getCycleList().get(currentCyclePosition);
+        }
+        setCurrentParameters();
         saveCycle = view.findViewById(R.id.save_cycle_button);
         saveCycle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cycle = new Cycle(nameOfCycle.getText().toString());
-                cycle.addAllToCycle(tempArr);
-                cycleList.addToCycles(cycle);
+                currentCycle = new Cycle(nameOfCycle.getText().toString());
+                currentCycle.addAllToCycle(tempArr);
+                cycleList.addToCycles(currentCycle);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -119,11 +122,16 @@ public class CycleAdd extends Fragment {
 
         @Override
         public void onBindViewHolder(CycleAddViewHolder holder, int position) {
-            holder.wakeUpTime.setText("-");
+
             final TextView name = holder.nameOfType;
             final TextView wakeup = holder.wakeUpTime;
             final LinearLayout color = holder.linearLayout;
             final int tempPosition = position;
+            if (currentCycle==null) {
+                holder.wakeUpTime.setText("-");
+            }else {
+                //TODO заполнение GridLayoutManager
+            }
             holder.linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -132,8 +140,8 @@ public class CycleAdd extends Fragment {
                         wakeup.setText(typesList.get(numberOfType).getTimeOfWakeUp());
                         name.setBackgroundColor(typesList.get(numberOfType).getColor());
                         wakeup.setBackgroundColor(typesList.get(numberOfType).getColor());
-                        //cycle.addToCycle(typesList.get(numberOfType), tempPosition);
-                        tempArr[tempPosition]=typesList.get(numberOfType);
+                        //currentCycle.addToCycle(typesList.get(numberOfType), tempPosition);
+                        tempArr[tempPosition] = typesList.get(numberOfType);
                         numberOfType++;
                         if (numberOfType == typesList.size()) {
                             numberOfType = 0;
@@ -141,7 +149,6 @@ public class CycleAdd extends Fragment {
                     }
                 }
             });
-
         }
 
         @Override

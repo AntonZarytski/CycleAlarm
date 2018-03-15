@@ -48,8 +48,9 @@ public class TypesList {
         TypeOfDay temp = types.remove(position);
         types.add(position, type);
         cycleDataSource.open();
-        cycleDataSource.deleteType(temp);
-        cycleDataSource.addType(type);
+        //TODO sqlexception не найдена надписб where name = temp.getName() в delete тожесамое
+        //cycleDataSource.editType(temp, type);
+        setTypes(types);
         cycleDataSource.close();
     }
 

@@ -15,7 +15,6 @@
     <ListView
         android:id="@+id/list_view_for_widget"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layouelow="@id/tvUpdate">
+        android:layout_height="match_parent">
     </ListView>
 </LinearLayout>

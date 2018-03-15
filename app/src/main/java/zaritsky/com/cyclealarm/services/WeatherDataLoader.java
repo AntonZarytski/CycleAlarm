@@ -100,6 +100,7 @@ public class WeatherDataLoader extends IntentService {
         lon = intent.getStringExtra(LON_KEY);
         lat = intent.getStringExtra(LAT_KEY);
         jsonObject = getJSONData();
+        if (jsonObject!=null)
         Log.e(LOG, "lat" + lat + " lon " + lon + " JSONObject " + jsonObject.toString());
     }
 

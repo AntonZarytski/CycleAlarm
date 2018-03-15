@@ -279,8 +279,8 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
             lat = String.valueOf(location.getLatitude());
             Log.e(LOG, "lon: " +  formatLocation(location));
             Log.e(LOG, "lat: " +  formatLocation(location));
-            //coordinatesWasGot = true;
-            onStartService();
+            /**запуск сервиса по загрузке погоды(json), остановлен пока не настроен alarmmanager*/
+            //onStartService();
         }
     }
 

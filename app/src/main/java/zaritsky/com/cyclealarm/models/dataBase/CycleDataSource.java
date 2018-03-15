@@ -44,7 +44,6 @@ public class CycleDataSource {
         database.insert(DataBaseHelper.TABLE_TYPES, null, values);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void editType(TypeOfDay oldType, TypeOfDay newType) {
         ContentValues editedType = new ContentValues();
         //editedNote.put(DataBaseHelper.COLUMN_ID, id);
@@ -61,7 +60,7 @@ public class CycleDataSource {
     public void deleteType(TypeOfDay typeOfDay) {
         String name = typeOfDay.getName();
         database.delete(DataBaseHelper.TABLE_TYPES, DataBaseHelper.COLUMN_NAME
-                + " = " + name, null);
+                + "=" + name, null);
     }
 
     public void deleteAll() {
