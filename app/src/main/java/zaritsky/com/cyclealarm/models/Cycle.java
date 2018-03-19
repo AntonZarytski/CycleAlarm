@@ -37,6 +37,9 @@ public class Cycle implements Serializable {
     public void removeFromCycle(int index){
         cycle.remove(index);
     }
+    public void setCycle(List<TypeOfDay> currentCycle){
+        cycle = currentCycle;
+    }
     public void setName(String name) {
         this.name = name;
     }

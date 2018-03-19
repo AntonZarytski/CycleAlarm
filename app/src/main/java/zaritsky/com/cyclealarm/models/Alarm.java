@@ -25,6 +25,7 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     private boolean isSmoothWakeUp;
     private boolean isScoringOfTime;
     private int longPause;
+    private int repeatTimePause;
     private int smoothMusicId;
     private int alarmMusicId;
     private int volumeOfAlarmMusic;
@@ -211,4 +212,11 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         this.nameOfSmoothMusic = nameOfSmoothMusic;
     }
 
+    public int getRepeatTimePause() {
+        return repeatTimePause;
+    }
+
+    public void setRepeatTimePause(int repeatTimePause) {
+        this.repeatTimePause = repeatTimePause;
+    }
 }

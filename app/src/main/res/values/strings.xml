@@ -42,6 +42,16 @@
     <string name="color">Цвет:</string>
     <string name="appwidget_text">CALENDAR</string>
     <string name="add_widget">Add widget</string>
+    <string name="interval">Интервал</string>
+    <string name="five_minute">5 минуты</string>
+    <string name="ten_minute">10 минут</string>
+    <string name="fifteen">15 минут</string>
+    <string name="thirty_minute">30 минут</string>
+    <string name="repeat">Повторять</string>
+    <string name="tree_time">3 раза</string>
+    <string name="fifth_time">5 раз</string>
+    <string name="newer">Никогда</string>
+    <string name="on">Выключено</string>
 
 
 </resources>

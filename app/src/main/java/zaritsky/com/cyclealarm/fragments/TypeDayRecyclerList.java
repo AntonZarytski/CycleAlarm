@@ -28,7 +28,6 @@ public class TypeDayRecyclerList extends Fragment {
     private TypesList typesList;
     private TypeDayAdapter adapter;
     private RecyclerView recyclerView;
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

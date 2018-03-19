@@ -36,6 +36,10 @@ public class CycleList implements Serializable{
     public void removeCycle(Cycle cycle){
         cycleList.remove(cycle);
     }
+    public void changeCycle(Cycle newcycle, int changedCyclePosition){
+        cycleList.remove(changedCyclePosition);
+        cycleList.add(changedCyclePosition, newcycle);
+    }
 
     public List<Cycle> getCycleList() {
         return cycleList;

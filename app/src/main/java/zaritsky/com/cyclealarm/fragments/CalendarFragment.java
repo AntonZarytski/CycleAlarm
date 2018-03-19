@@ -49,9 +49,9 @@ public class CalendarFragment extends Fragment {
         }
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, cyclesNames);
         cycleSelector.setAdapter(adapter);
-        if (cycleList!=null){
+        if (!cycleList.isEmpty()){
          typeCycle = new ArrayList<>();
-        currentCycle = cycleList.get(0);
+         currentCycle = cycleList.get(0);
             for (int i = 0; i <currentCycle.getCycle().size() ; i++) {
                 if (currentCycle.getCycle().get(i)!=null){
                     typeCycle.add(currentCycle.getCycle().get(i));

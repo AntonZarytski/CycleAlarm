@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
@@ -39,6 +40,8 @@ public class CycleAdd extends Fragment {
     private CycleList cycleList;
     private LayoutInflater inflater;
     int currentCyclePosition;
+    GridLayoutManager layoutManager;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,18 +50,28 @@ public class CycleAdd extends Fragment {
         cycleList = CycleList.getInstance(getContext());
         recyclerView = view.findViewById(R.id.cycles_add_recycler_view);
         nameOfCycle = view.findViewById(R.id.name_of_cycle_text_view);
-        if (currentCycle!=null){
+        if (currentCycle != null) {
             currentCyclePosition = getArguments().getInt(CURRENT_CYCLE_POSITION);
-            currentCycle=cycleList.getCycleList().get(currentCyclePosition);
+            currentCycle = cycleList.getCycleList().get(currentCyclePosition);
+            nameOfCycle.setText(currentCycle.getName());
         }
-        setCurrentParameters();
         saveCycle = view.findViewById(R.id.save_cycle_button);
         saveCycle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentCycle = new Cycle(nameOfCycle.getText().toString());
-                currentCycle.addAllToCycle(tempArr);
-                cycleList.addToCycles(currentCycle);
+                if (currentCycle == null) {
+                    currentCycle = new Cycle(nameOfCycle.getText().toString());
+                    currentCycle.addAllToCycle(tempArr);
+                    cycleList.addToCycles(currentCycle);
+                } else {
+                    List<TypeOfDay> cycle = new ArrayList<>();
+                    for (TypeOfDay aTempArr : tempArr) {
+                            cycle.add(aTempArr);
+                    }
+                    currentCycle.setCycle(cycle);
+                    currentCycle.setName(nameOfCycle.getText().toString());
+                    cycleList.changeCycle(currentCycle, currentCyclePosition);
+                }
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -80,22 +93,27 @@ public class CycleAdd extends Fragment {
                 showDialog(nameOfCycle);
             }
         });
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 7);
+        layoutManager = new GridLayoutManager(getContext(), 7);
         typesList = TypesList.getInstance(getContext());
         tempArr = new TypeOfDay[35];
         adapter = new CycleAddAdapter(typesList.getTypes(), getContext());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
+
         return view;
     }
-    private void setCurrentParameters(){
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        currentCycle = null;
     }
+
     public static CycleAdd newInstance(int position) {
         CycleAdd fragment = new CycleAdd();
         Bundle args = new Bundle();
         fragment.setCurrentCycle(CycleList.getOurInstance().getCycleList().get(position));
-        args.putInt( CURRENT_CYCLE_POSITION, position);
+        args.putInt(CURRENT_CYCLE_POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -107,7 +125,8 @@ public class CycleAdd extends Fragment {
     class CycleAddAdapter extends RecyclerView.Adapter<CycleAddViewHolder> {
         List<TypeOfDay> typesList;
         Context context;
-        int numberOfType=0;
+        int numberOfType = 0;
+        int defaulColor = getResources().getColor(R.color.colorAccent);
 
         public CycleAddAdapter(List<TypeOfDay> typesList, Context context) {
             this.typesList = typesList;
@@ -120,31 +139,43 @@ public class CycleAdd extends Fragment {
             return new CycleAddViewHolder(itemView);
         }
 
+        private void setDataForTypeDayFrame(TextView nameView, TextView wakeupView, String name, String wakeUpTime, int color) {
+            nameView.setText(name);
+            nameView.setBackgroundColor(color);
+            wakeupView.setText(wakeUpTime);
+            wakeupView.setBackgroundColor(color);
+        }
+
         @Override
         public void onBindViewHolder(CycleAddViewHolder holder, int position) {
-
+            TypeOfDay currentType = null;
             final TextView name = holder.nameOfType;
             final TextView wakeup = holder.wakeUpTime;
-            final LinearLayout color = holder.linearLayout;
             final int tempPosition = position;
-            if (currentCycle==null) {
-                holder.wakeUpTime.setText("-");
-            }else {
-                //TODO заполнение GridLayoutManager
+            if (currentCycle == null) {
+                setDataForTypeDayFrame(name, wakeup, "", "-", defaulColor);
+            } else {
+                if (currentCycle.getCycle().get(position) != null) {
+                    currentType = currentCycle.getCycle().get(position);
+                    setDataForTypeDayFrame(name, wakeup, currentType.getName(),
+                            currentType.getTimeOfWakeUp(), currentType.getColor());
+                    tempArr[position]=currentType;
+                } else {
+                    setDataForTypeDayFrame(name, wakeup, "", "-", defaulColor);
+                    tempArr[position]=null;
+                }
             }
             holder.linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (typesList.size() > 0) {
-                        name.setText(typesList.get(numberOfType).getName());
-                        wakeup.setText(typesList.get(numberOfType).getTimeOfWakeUp());
-                        name.setBackgroundColor(typesList.get(numberOfType).getColor());
-                        wakeup.setBackgroundColor(typesList.get(numberOfType).getColor());
-                        //currentCycle.addToCycle(typesList.get(numberOfType), tempPosition);
+                        setDataForTypeDayFrame(name, wakeup, typesList.get(numberOfType).getName(),
+                                typesList.get(numberOfType).getTimeOfWakeUp(), typesList.get(numberOfType).getColor());
                         tempArr[tempPosition] = typesList.get(numberOfType);
                         numberOfType++;
                         if (numberOfType == typesList.size()) {
                             numberOfType = 0;
+                            setDataForTypeDayFrame(name, wakeup, "", "-", defaulColor);
                         }
                     }
                 }
@@ -169,6 +200,7 @@ public class CycleAdd extends Fragment {
             wakeUpTime = itemView.findViewById(R.id.type_of_day_wake_up_table);
         }
     }
+
     private void showDialog(final TextView textView) {
         View dialog = inflater.inflate(R.layout.edit_dialog, null);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());

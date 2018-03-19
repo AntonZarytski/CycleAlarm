@@ -25,6 +25,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -75,6 +77,8 @@ public class AlarmAdd extends Fragment {
     private TextView nameOfSmoothMelody;
     private Switch onScoringOfTime;
     private LayoutInflater inflater;
+    int pause = 0;
+    int repeat = 0;
 
     @Nullable
     @Override
@@ -99,13 +103,15 @@ public class AlarmAdd extends Fragment {
         periodOfRecycler.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                currentCycle = cycleList.get(position);
+                if (!cycleList.isEmpty())
+                    currentCycle = cycleList.get(position);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 //TODO цикл неделя
-                // currentCycle = cycleList.get(0);
+                if (!cycleList.isEmpty())
+                    currentCycle = cycleList.get(0);
             }
         });
         return view;
@@ -130,7 +136,12 @@ public class AlarmAdd extends Fragment {
             onSmoothWake.setChecked(currentAlarm.isSmoothWakeUp());
             onScoringOfTime.setChecked(currentAlarm.isScoringOfTime());
         }
-        durationOfPause.setText(String.valueOf(currentAlarm.getLongPause()));
+        pause = currentAlarm.getLongPause();
+        repeat = currentAlarm.getRepeatTimePause();
+        if (repeat != 0)
+            durationOfPause.setText(pause + "минут, " + repeat + "раза");
+        else
+            durationOfPause.setText(pause + "минут.");
         nameOfSound.setText(currentAlarm.getNameOfMusic());
         typeOfVibro.setText(currentAlarm.getNameOfVibroType());
         nameOfSmoothMelody.setText(currentAlarm.getNameOfSmoothMusic());
@@ -179,32 +190,27 @@ public class AlarmAdd extends Fragment {
 
                 calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.set(Calendar.MINUTE, timePicker.getMinute());
-
-                currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString(), currentCycle);
-
-                currentAlarm.setPause(onPause.isChecked());
-                currentAlarm.setMusic(onSound.isChecked());
-                currentAlarm.setVibro(onVibro.isChecked());
-                currentAlarm.setSmoothWakeUp(onSmoothWake.isChecked());
-                currentAlarm.setScoringOfTime(onScoringOfTime.isChecked());
-
-                currentAlarm.setName(nameOfAlarm.getText().toString());
-                dataeOfNearestActive.setText("TODO ближайшая дата сработки");
-                currentAlarm.setLongPause(5);
-                currentAlarm.setNameOfMusic("TODO имя музыки");
-                currentAlarm.setNameOfVibroType("TODO тип вибрации");
-                currentAlarm.setNameOfSmoothMusic("TODO имя предварительной мелодии");
-
-
-                currentAlarm.setVolumeOfAlarmMusic(volumeOfSound.getProgress());
-                currentAlarm.setForceOfVibro(powerOfVibro.getProgress());
-
-                if (currentAlarm==null) {
+                if (currentAlarm == null) {
+                    currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString(), currentCycle);
+                    currentAlarm.setPause(onPause.isChecked());
+                    currentAlarm.setMusic(onSound.isChecked());
+                    currentAlarm.setVibro(onVibro.isChecked());
+                    currentAlarm.setSmoothWakeUp(onSmoothWake.isChecked());
+                    currentAlarm.setScoringOfTime(onScoringOfTime.isChecked());
+                    currentAlarm.setName(nameOfAlarm.getText().toString());
+                    dataeOfNearestActive.setText("TODO ближайшая дата сработки");
+                    currentAlarm.setLongPause(pause);
+                    currentAlarm.setRepeatTimePause(repeat);
+                    currentAlarm.setNameOfMusic("TODO имя музыки");
+                    currentAlarm.setNameOfVibroType("TODO тип вибрации");
+                    currentAlarm.setNameOfSmoothMusic("TODO имя предварительной мелодии");
+                    currentAlarm.setVolumeOfAlarmMusic(volumeOfSound.getProgress());
+                    currentAlarm.setForceOfVibro(powerOfVibro.getProgress());
                     alarmList.addAlarm(currentAlarm);
                     currentAlarm = null;
-                }else {
+                } else {
                     alarmList.changeAlarm(currentAlarm, currentAlarmPosition);
-                    currentAlarm=null;
+                    currentAlarm = null;
                 }
                 new Thread(new Runnable() {
                     @Override
@@ -239,7 +245,91 @@ public class AlarmAdd extends Fragment {
                 showDialog(notificationOfAlarm);
             }
         });
+        durationOfPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shouPauseDialog();
+            }
+        });
 
+
+    }
+
+    private void shouPauseDialog() {
+        View dialog = inflater.inflate(R.layout.pause_dialog, null);
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());
+        mDialogBuilder.setView(dialog);
+        final TextView onOffPauseTextView = dialog.findViewById(R.id.pause_text_view_dialog);
+        final Switch onOffPauseSwith = dialog.findViewById(R.id.switch_pause_dialog);
+        final LinearLayout dataPause = dialog.findViewById(R.id.data_pause_dialog);
+        onOffPauseSwith.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onOffPauseSwith.isChecked()) {
+                    dataPause.setVisibility(View.VISIBLE);
+                    onOffPauseTextView.setText("Включена");
+                } else {
+                    onOffPauseTextView.setText("Выключена");
+                    dataPause.setVisibility(View.GONE);
+                    dataPause.setFocusableInTouchMode(false);
+                }
+            }
+        });
+        final RadioGroup pauseGroup = dialog.findViewById(R.id.radiobtn_group_pause);
+        pauseGroup.check(R.id.five_min_pause);
+        final RadioGroup repeatGroup = dialog.findViewById(R.id.radiobtn_group_repeat);
+        repeatGroup.check(R.id.newer_repeat);
+        mDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                if (onOffPauseSwith.isChecked()) {
+                                    repeat = getRepeatValue(repeatGroup.getCheckedRadioButtonId());
+                                    pause = getPauseValuse(pauseGroup.getCheckedRadioButtonId());
+                                    if (repeat != 0)
+                                        //TODO вынести текст в ресурсы
+                                        durationOfPause.setText(pause + " минут, " + repeat + " раза");
+                                    else
+                                        durationOfPause.setText(pause + " минут.");
+                                } else durationOfPause.setVisibility(View.GONE);
+                            }
+                        })
+                .setNegativeButton("Отмена",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        //Создаем Alert
+        // Dialog:
+        AlertDialog alertDialog = mDialogBuilder.create();
+        //и отображаем его:
+        alertDialog.show();
+    }
+    private int getRepeatValue(int checkedId){
+        switch (checkedId) {
+            case R.id.three_time:
+                return 3;
+            case R.id.fifth_time:
+                return  5;
+            case R.id.newer_repeat:
+                return  0;
+        }
+        return  0;
+    }
+    private int getPauseValuse(int checkedId){
+        switch (checkedId) {
+            case R.id.five_min_pause:
+                return  5;
+            case R.id.ten_min_pause:
+                return  10;
+            case R.id.fifteen_min_pause:
+                return 15;
+            case R.id.thirty_min_pause:
+                return 30;
+        }
+        return  5;
     }
 
     private void showDialog(final TextView textView) {
@@ -270,7 +360,6 @@ public class AlarmAdd extends Fragment {
         //Создаем Alert
         // Dialog:
         AlertDialog alertDialog = mDialogBuilder.create();
-
         //и отображаем его:
         alertDialog.show();
     }

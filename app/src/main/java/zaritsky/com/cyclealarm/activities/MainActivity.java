@@ -70,35 +70,34 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
         setContentView(R.layout.activity_main);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
+            ObjectInputStream ois;
             alarmList = AlarmList.getInstance(getApplicationContext());
             cycleList = CycleList.getInstance(getApplicationContext());
             List<Alarm> alarms;
             File alarmsSavePath = new File(getApplicationContext().getFilesDir(), ALARMFILE);
             File cyclesSavePath = new File(getApplicationContext().getFilesDir(), CYCLEFILE);
-            if (!alarmsSavePath.exists()) {
-                return;
-            }
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(alarmsSavePath));
-            alarms = (List<Alarm>) ois.readObject();
-            if (alarms ==null){
-                alarms = new ArrayList<>();
+            if (alarmsSavePath.exists()) {
+                ois = new ObjectInputStream(new FileInputStream(alarmsSavePath));
+                alarms = (List<Alarm>) ois.readObject();
+                if (alarms ==null){
+                    alarms = new ArrayList<>();
+                    alarmList.setAlarmList(alarms);
+                }
+                ois.close();
             }
             List<Cycle> cycles;
-            if (!cyclesSavePath.exists()) {
-                return;
+            if (cyclesSavePath.exists()) {
+                ois = new ObjectInputStream(new FileInputStream(cyclesSavePath));
+                cycles = (List<Cycle>) ois.readObject();
+                if (cycles==null){
+                    cycles = new ArrayList<>();
+                }
+                cycleList.setCycleList(cycles);
+                ois.close();
             }
-            ois = new ObjectInputStream(new FileInputStream(cyclesSavePath));
-            cycles = (List<Cycle>) ois.readObject();
-            if (cycles==null){
-               cycles = new ArrayList<>();
-            }
-            cycleList.setCycleList(cycles);
-            alarmList.setAlarmList(alarms);
-            ois.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
 
         initFragments();
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -279,8 +278,9 @@ public class MainActivity extends AppCompatActivity implements AbleToChangeFragm
             lat = String.valueOf(location.getLatitude());
             Log.e(LOG, "lon: " +  formatLocation(location));
             Log.e(LOG, "lat: " +  formatLocation(location));
-            /**запуск сервиса по загрузке погоды(json), остановлен пока не настроен alarmmanager*/
-            //onStartService();
+            /**запуск сервиса по загрузке погоды(json), сделать проверку на случай если у пользователя
+             * не доступен интернет(Пр нет денег)*/
+            onStartService();
         }
     }
 
