@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.icu.util.Calendar;
 import android.icu.util.TimeZone;
 import android.os.Build;
@@ -14,6 +15,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,18 +27,23 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
@@ -46,7 +54,6 @@ import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
 
 import static android.content.Context.ALARM_SERVICE;
-import static android.provider.Telephony.Mms.Part.FILENAME;
 
 public class AlarmAdd extends Fragment {
     private static final String CURRENT_ALARM_POSITION = "CURRENT_ALARM_POSITION";
@@ -251,7 +258,29 @@ public class AlarmAdd extends Fragment {
                 shouPauseDialog();
             }
         });
-
+        if(!onPause.isChecked()){
+            durationOfPause.setVisibility(View.GONE);
+        }
+        onPause.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(onPause.isChecked()){
+                    durationOfPause.setVisibility(View.VISIBLE);
+                }else{
+                    durationOfPause.setVisibility(View.GONE);
+                }
+            }
+        });
+        nameOfSound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    shouSoundChooseDialog();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
@@ -262,6 +291,12 @@ public class AlarmAdd extends Fragment {
         final TextView onOffPauseTextView = dialog.findViewById(R.id.pause_text_view_dialog);
         final Switch onOffPauseSwith = dialog.findViewById(R.id.switch_pause_dialog);
         final LinearLayout dataPause = dialog.findViewById(R.id.data_pause_dialog);
+        if(!onPause.isChecked()){
+            onOffPauseSwith.setChecked(false);
+            durationOfPause.setVisibility(View.GONE);
+            dataPause.setVisibility(View.GONE);
+        }else
+            onOffPauseSwith.setChecked(true);
         onOffPauseSwith.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,7 +306,6 @@ public class AlarmAdd extends Fragment {
                 } else {
                     onOffPauseTextView.setText("Выключена");
                     dataPause.setVisibility(View.GONE);
-                    dataPause.setFocusableInTouchMode(false);
                 }
             }
         });
@@ -293,6 +327,7 @@ public class AlarmAdd extends Fragment {
                                     else
                                         durationOfPause.setText(pause + " минут.");
                                 } else durationOfPause.setVisibility(View.GONE);
+                                onPause.setChecked(onOffPauseSwith.isChecked());
                             }
                         })
                 .setNegativeButton("Отмена",
@@ -394,5 +429,112 @@ public class AlarmAdd extends Fragment {
                 break;
         }
         return true;
+    }
+
+    private void shouSoundChooseDialog() throws IOException {
+        View dialog = inflater.inflate(R.layout.sound_check_dialog, null);
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());
+        mDialogBuilder.setView(dialog);
+        List<File> files = new ArrayList<>();
+      //TODO add raw files to List<File> files
+        final TextView onOffSoundTextView = dialog.findViewById(R.id.sound_text_view_dialog);
+        final Switch onOffSoundSwith = dialog.findViewById(R.id.switch_sound_dialog);
+        onOffSoundSwith.setChecked(onSound.isChecked());
+        final LinearLayout dataSound = dialog.findViewById(R.id.data_sound_dialog);
+        final SeekBar volumeSound = dialog.findViewById(R.id.volume_sound_dialog_spinner);
+        volumeSound.setProgress(volumeOfSound.getProgress());
+        final RecyclerView chosseSound = dialog.findViewById(R.id.recycler_choose_sound);
+        FileChooseAdapter chooseAdapter = new FileChooseAdapter(files, getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        chosseSound.setAdapter(chooseAdapter);
+
+        chosseSound.setLayoutManager(layoutManager);
+        if(!onSound.isChecked()){
+            onOffSoundSwith.setChecked(false);
+            durationOfPause.setVisibility(View.GONE);
+            dataSound.setVisibility(View.GONE);
+        }else
+            onOffSoundSwith.setChecked(true);
+
+        onOffSoundSwith.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onOffSoundSwith.isChecked()) {
+                    dataSound.setVisibility(View.VISIBLE);
+                    onOffSoundTextView.setText("Включена");
+                } else {
+                    onOffSoundTextView.setText("Выключена");
+                    dataSound.setVisibility(View.GONE);
+                }
+            }
+        });
+        mDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                if (onOffSoundSwith.isChecked()) {
+                                    nameOfAlarm.setText("Выбранный трек");
+                                    volumeOfSound.setProgress(volumeSound.getProgress());
+                                } else {
+                                    nameOfSound.setVisibility(View.GONE);
+                                    volumeOfSound.setVisibility(View.GONE);
+                                }
+                                onSound.setChecked(onOffSoundSwith.isChecked());
+                            }
+                        })
+                .setNegativeButton("Отмена",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        //Создаем Alert
+        // Dialog:
+        AlertDialog alertDialog = mDialogBuilder.create();
+        //и отображаем его:
+        alertDialog.show();
+    }
+    private class FileChooseAdapter extends RecyclerView.Adapter<AlarmAdd.FileChooseViewHolder>{
+        List<File> files;
+        Context contex;
+
+        FileChooseAdapter(List<File> files, Context context){
+            this.files = files;
+            this.contex = context;
+        }
+
+        @Override
+        public AlarmAdd.FileChooseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cycle_element, parent, false);
+            return new AlarmAdd.FileChooseViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(AlarmAdd.FileChooseViewHolder holder, final int position) {
+            holder.fileName.setText(files.get(position).getName());
+            holder.fileView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO игарть мелодию
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            if (cycleList!= null) {
+                return cycleList.size();
+            } else return 0;
+        }
+    }
+    static class FileChooseViewHolder extends RecyclerView.ViewHolder{
+        RelativeLayout fileView;
+        TextView fileName;
+        public FileChooseViewHolder(View itemView) {
+            super(itemView);
+            fileView = itemView.findViewById(R.id.cycle_recycler_view);
+            fileName = itemView.findViewById(R.id.name_of_cycle_text_view);
+        }
     }
 }
