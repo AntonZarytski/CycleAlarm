@@ -324,7 +324,8 @@ public class AlarmAdd extends Fragment {
             @Override
             public void onClick(View v) {
                 TypedArray soundIds1 = getContext().getResources().obtainTypedArray(R.array.sounds_ids);
-                shouSoundChooseDialog(soundIds1, nameOfSound, volumeOfSound, true);
+                int countOfSound = getResources().getIntArray(R.array.sounds_ids).length;
+                shouSoundChooseDialog(soundIds1, nameOfSound, volumeOfSound, countOfSound, true);
             }
         });
         onSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -387,7 +388,8 @@ public class AlarmAdd extends Fragment {
             @Override
             public void onClick(View v) {
                 TypedArray soundIds1 = getContext().getResources().obtainTypedArray(R.array.smooth_ids);
-                shouSoundChooseDialog(soundIds1, nameOfSmoothMelody, volumeOfSmooth, false);
+                int countOfSmooth = getResources().getIntArray(R.array.smooth_ids).length;
+                shouSoundChooseDialog(soundIds1, nameOfSmoothMelody, volumeOfSmooth, countOfSmooth, false);
             }
         });
         volumeOfSmooth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -578,25 +580,29 @@ public class AlarmAdd extends Fragment {
         return true;
     }
 
-    private void shouSoundChooseDialog(TypedArray soundIds1, final TextView nameSound, final SeekBar volumeOfSound, final boolean isSoundDialog) {
+    private void shouSoundChooseDialog(TypedArray soundIds1, final TextView nameSound, final SeekBar volumeOfSound, int countOffiles, final boolean isSoundDialog) {
         View dialog = inflater.inflate(R.layout.sound_check_dialog, null);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());
         mDialogBuilder.setView(dialog);
         final List<String> files = new ArrayList<>();
         final List<Integer> idsList = new ArrayList<>();
-        int[] soundIds = new int[11];
-        for (int i = 0; i < soundIds.length; i++) {
-            soundIds[i] = soundIds1.getResourceId(i, i);
+        for (int i = 0; i < countOffiles; i++) {
             //TODO make regex? from "name_sound" to "Name sound."
-            idsList.add(soundIds[i]);
-            files.add(getResources().getResourceEntryName(soundIds[i]));
+            idsList.add(soundIds1.getResourceId(i, i));
+            files.add(getResources().getResourceEntryName(soundIds1.getResourceId(i, i)));
         }
         final TextView onOffSoundTextView = dialog.findViewById(R.id.sound_text_view_dialog);
-        final Switch onOffSoundSwith = dialog.findViewById(R.id.switch_sound_dialog);
-        onOffSoundSwith.setChecked(onSound.isChecked());
-        final LinearLayout dataSound = dialog.findViewById(R.id.data_sound_dialog);
+        final Switch onOffSoundSwitch = dialog.findViewById(R.id.switch_sound_dialog);
         final SeekBar volumeSound = dialog.findViewById(R.id.volume_sound_dialog_spinner);
         volumeSound.setProgress(volumeOfSound.getProgress());
+        if (isSoundDialog) {
+            onOffSoundSwitch.setChecked(onSound.isChecked());
+        }else {
+            onOffSoundSwitch.setChecked(onSmoothWake.isChecked());
+        }
+        final LinearLayout dataSound = dialog.findViewById(R.id.data_sound_dialog);
+
+
         final RecyclerView chosseSound = dialog.findViewById(R.id.recycler_choose_sound);
 
         //TODO костыль 1 recycler на 2 параметра
@@ -606,10 +612,10 @@ public class AlarmAdd extends Fragment {
 
         chosseSound.setLayoutManager(layoutManager);
         if (!onSound.isChecked()) {
-            onOffSoundSwith.setChecked(false);
+            onOffSoundSwitch.setChecked(false);
             dataSound.setVisibility(View.GONE);
         } else
-            onOffSoundSwith.setChecked(true);
+            onOffSoundSwitch.setChecked(true);
         volumeSound.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -618,21 +624,22 @@ public class AlarmAdd extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                mediaPlayer = MediaPlayer.create(getContext(), idsList.get(chooseAdapter.currentposition));
-                if (!mediaPlayer.isPlaying()) {
+                if (mediaPlayer == null) {
+                    mediaPlayer = MediaPlayer.create(getContext(), idsList.get(chooseAdapter.currentposition));
                     mediaPlayer.start();
-                }else {
-                    mediaPlayer.stop();
-                    mediaPlayer.start();
+                } else {
+                    if (!mediaPlayer.isPlaying()) {
+                        mediaPlayer.start();
+                    }
                 }
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.stop();
+              //  mediaPlayer.stop();
             }
         });
-        onOffSoundSwith.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        onOffSoundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -649,7 +656,7 @@ public class AlarmAdd extends Fragment {
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                if (onOffSoundSwith.isChecked()) {
+                                if (onOffSoundSwitch.isChecked()) {
                                     nameSound.setText(files.get(chooseAdapter.currentposition));
                                     volumeOfSound.setProgress(volumeSound.getProgress());
                                     if (isSoundDialog) {
@@ -661,14 +668,21 @@ public class AlarmAdd extends Fragment {
                                     nameSound.setVisibility(View.GONE);
                                     volumeOfSound.setVisibility(View.GONE);
                                 }
-                                onSound.setChecked(onOffSoundSwith.isChecked());
-                                mediaPlayer.stop();
+                                if (isSoundDialog){
+                                    onSound.setChecked(onOffSoundSwitch.isChecked());
+                                }else {
+                                    onSmoothWake.setChecked(onOffSoundSwitch.isChecked());
+                                }
+
+                                if (mediaPlayer != null)
+                                    mediaPlayer.stop();
                             }
                         })
                 .setNegativeButton("Отмена",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                mediaPlayer.stop();
+                                if (mediaPlayer != null)
+                                    mediaPlayer.stop();
                                 dialog.cancel();
                             }
                         });
@@ -775,11 +789,11 @@ public class AlarmAdd extends Fragment {
                     if (isVibrationDialogShow) {
                         vibrator.vibrate(patterns.get(position), -1);
                     } else {
-                        if (mediaPlayer==null) {
+                        if (mediaPlayer == null) {
                             mediaPlayer = MediaPlayer.create(getContext(), idsSound.get(position));
                             mediaPlayer.setLooping(false);
                             mediaPlayer.start();
-                        }else {
+                        } else {
                             if (mediaPlayer.isPlaying()) {
                                 mediaPlayer.stop();
                             }
