@@ -278,15 +278,6 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-        <SeekBar
-            android:id="@+id/power_of_vibro_seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:progress="1"
-            android:max="100"
-            />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -332,7 +323,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
+
         </LinearLayout>
+        <SeekBar
+            android:id="@+id/volume_of_smooth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:progress="1"
+            android:max="100"/>
 
         <LinearLayout
             android:layout_width="match_parent"

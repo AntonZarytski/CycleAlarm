@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="sounds_ids">
+        <item>@raw/a_real_hoot</item>
+        <item>@raw/bright_morning</item>
+        <item>@raw/cuckoo_clock</item>
+        <item>@raw/early_twilight</item>
+        <item>@raw/full_of_wonder</item>
+        <item>@raw/gentle_breeze</item>
+        <item>@raw/icicles</item>
+        <item>@raw/jump_start</item>
+        <item>@raw/loose_change</item>
+        <item>@raw/rolling_fog</item>
+        <item>@raw/spokes</item>
+    </integer-array>
+</resources>

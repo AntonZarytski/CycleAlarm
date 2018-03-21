@@ -55,7 +55,6 @@
             android:id="@+id/line_sound_dialog1"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_below="@id/scroll_view_sound_dialog"
             android:layout_margin="4dp"
             android:background="@color/colorAccent"
             android:orientation="horizontal" />

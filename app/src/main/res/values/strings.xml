@@ -52,6 +52,13 @@
     <string name="fifth_time">5 раз</string>
     <string name="newer">Никогда</string>
     <string name="on">Выключено</string>
-
+    <array name="vibrator_names">
+        <item>"Basic call"</item>
+        <item>"Tick tock"</item>
+        <item>"Tick tock short"</item>
+        <item>"Tap Tap Tap"</item>
+        <item>"Zig Zig Zig"</item>
+        <item>"Shoot"</item>
+    </array>
 
 </resources>

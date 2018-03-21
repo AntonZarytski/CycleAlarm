@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="smooth_ids">
+        <item>@raw/birdsong</item>
+        <item>@raw/creation</item>
+        <item>@raw/indian_mantra</item>
+        <item>@raw/magic_rain</item>
+        <item>@raw/in_a_dream</item>
+        <item>@raw/see_depths</item>
+        <item>@raw/sounds_of_forest</item>
+        <item>@raw/summer_field</item>
+    </integer-array>
+</resources>
