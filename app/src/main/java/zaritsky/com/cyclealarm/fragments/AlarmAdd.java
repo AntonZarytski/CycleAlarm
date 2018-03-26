@@ -62,6 +62,9 @@ import static android.content.Context.VIBRATOR_SERVICE;
 public class AlarmAdd extends Fragment {
     private static final String CURRENT_ALARM_POSITION = "CURRENT_ALARM_POSITION";
     private final String ALARMFILE = "AlarmsList";
+    private final String MP_IS_PLAY_FLAG = "MP_IS_PLAY_FLAG";
+    private final String CURRENT_ID_FLAG = "CURRENT_ID_FLAG";
+    private final String CURRENT_TIME_PLAY_FLAG = "CURRENT_TIME_PLAY_FLAG";
     private final String LOG_TAG = "myLogs";
     private Alarm currentAlarm;
     private List<Cycle> cycleList;
@@ -88,11 +91,13 @@ public class AlarmAdd extends Fragment {
     private TextView nameOfSmoothMelody;
     private Switch onScoringOfTime;
     private LayoutInflater inflater;
+    int smoothPrepareTime = 0;
     int pause = 0;
     int repeat = 0;
     int currentIdSound;
     long[] currentPattern;
     int currentSmoothId;
+    int currentMediaId;
     Vibrator vibrator;
     //TODO костыль, или 2 раза делать recycler view
     boolean isVibrationDialogShow = false;
@@ -110,6 +115,14 @@ public class AlarmAdd extends Fragment {
         if (currentAlarm != null) {
             currentAlarmPosition = getArguments().getInt(CURRENT_ALARM_POSITION);
             setCurrentParameters();
+        }
+        if (savedInstanceState != null) {
+            currentMediaId = savedInstanceState.getInt(CURRENT_ID_FLAG);
+            if (savedInstanceState.getBoolean(MP_IS_PLAY_FLAG)) {
+                mediaPlayer = MediaPlayer.create(getContext(), currentMediaId);
+                mediaPlayer.seekTo(savedInstanceState.getInt(CURRENT_TIME_PLAY_FLAG));
+                mediaPlayer.start();
+            }
         }
         alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
         audioManager = (AudioManager) getContext().getSystemService(AUDIO_SERVICE);
@@ -139,6 +152,19 @@ public class AlarmAdd extends Fragment {
         return view;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mediaPlayer.isPlaying()) {
+            outState.putInt(CURRENT_ID_FLAG, currentMediaId);
+            outState.putBoolean(MP_IS_PLAY_FLAG, true);
+            outState.putInt(CURRENT_TIME_PLAY_FLAG, mediaPlayer.getCurrentPosition());
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        super.onSaveInstanceState(outState);
+    }
+
     private void setCurrentParameters() {
         String wakeUpTime[] = currentAlarm.getFormatedTime().split(":");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -154,9 +180,10 @@ public class AlarmAdd extends Fragment {
         repeat = currentAlarm.getRepeatTimePause();
         nameOfSound.setText(currentAlarm.getNameOfMusic());
         nameOfVibro.setText(currentAlarm.getNameOfVibroType());
-        nameOfSmoothMelody.setText(currentAlarm.getNameOfSmoothMusic());
+        smoothPrepareTime = currentAlarm.getPreparedSmoothTime();
+        nameOfSmoothMelody.setText(currentAlarm.getNameOfSmoothMusic() + " за " + smoothPrepareTime + " минуты.");
         volumeOfSound.setProgress(currentAlarm.getVolumeOfAlarmMusic());
-        volumeOfSmooth.setProgress(currentAlarm.getVolemeOfSmooth());
+        volumeOfSmooth.setProgress(currentAlarm.getVolumeOfSmooth());
         currentIdSound = currentAlarm.getAlarmMusicId();
         currentPattern = currentAlarm.getVibratorPattern();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -246,7 +273,7 @@ public class AlarmAdd extends Fragment {
                     dataeOfNearestActive.setText("TODO ближайшая дата сработки");
                     currentAlarm.setLongPause(pause);
                     currentAlarm.setRepeatTimePause(repeat);
-
+                    currentAlarm.setPreparedSmoothTime(smoothPrepareTime);
                     currentAlarm.setNameOfSmoothMusic(nameOfSmoothMelody.getText().toString());
                     currentAlarm.setSmoothMusicId(currentSmoothId);
                     currentAlarm.setVolumeOfSmooth(volumeOfSmooth.getProgress());
@@ -340,6 +367,8 @@ public class AlarmAdd extends Fragment {
                     volumeOfSound.setVisibility(View.VISIBLE);
                     nameOfSound.setVisibility(View.VISIBLE);
                 } else {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
                     volumeOfSound.setVisibility(View.GONE);
                     nameOfSound.setVisibility(View.GONE);
                 }
@@ -377,11 +406,13 @@ public class AlarmAdd extends Fragment {
                 mediaPlayer.setVolume(volumeOfSound.getProgress(), volumeOfSound.getProgress());
                 mediaPlayer.setLooping(false);
                 mediaPlayer.start();
+                currentMediaId = currentSmoothId;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mediaPlayer.stop();
+                mediaPlayer.release();
             }
         });
         nameOfSmoothMelody.setOnClickListener(new View.OnClickListener() {
@@ -404,11 +435,13 @@ public class AlarmAdd extends Fragment {
                 mediaPlayer.setVolume(volumeOfSmooth.getProgress(), volumeOfSmooth.getProgress());
                 mediaPlayer.setLooping(false);
                 mediaPlayer.start();
+                currentMediaId = currentSmoothId;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mediaPlayer.stop();
+                mediaPlayer.release();
             }
         });
         onSmoothWake.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -417,12 +450,16 @@ public class AlarmAdd extends Fragment {
                 if (isChecked) {
                     if (currentAlarm == null) {
                         currentSmoothId = getContext().getResources().obtainTypedArray(R.array.smooth_ids).getResourceId(0, 0);
+                        smoothPrepareTime = 3;
                         //TODO regex to name of sound
-                        nameOfSmoothMelody.setText(getResources().getResourceEntryName(currentSmoothId));
+                        nameOfSmoothMelody.setText(getResources().getResourceEntryName(currentSmoothId) + " за " + smoothPrepareTime + " минут.");
                     }
                     nameOfSmoothMelody.setVisibility(View.VISIBLE);
                     volumeOfSmooth.setVisibility(View.VISIBLE);
                 } else {
+                    smoothPrepareTime = 0;
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
                     nameOfSmoothMelody.setVisibility(View.GONE);
                     volumeOfSmooth.setVisibility(View.GONE);
                 }
@@ -591,31 +628,34 @@ public class AlarmAdd extends Fragment {
             idsList.add(soundIds1.getResourceId(i, i));
             files.add(getResources().getResourceEntryName(soundIds1.getResourceId(i, i)));
         }
+        final RadioGroup prepareSmoothGroup = dialog.findViewById(R.id.radiobtn_group_prepared_smooth_activation);
+        final LinearLayout smoothData = dialog.findViewById(R.id.smooth_activation_data_layout);
         final TextView onOffSoundTextView = dialog.findViewById(R.id.sound_text_view_dialog);
         final Switch onOffSoundSwitch = dialog.findViewById(R.id.switch_sound_dialog);
         final SeekBar volumeSound = dialog.findViewById(R.id.volume_sound_dialog_spinner);
+        final LinearLayout dataSound = dialog.findViewById(R.id.data_sound_dialog);
+        final RecyclerView chosseSound = dialog.findViewById(R.id.recycler_choose_sound);
         volumeSound.setProgress(volumeOfSound.getProgress());
+
         if (isSoundDialog) {
             onOffSoundSwitch.setChecked(onSound.isChecked());
-        }else {
+            smoothData.setVisibility(View.GONE);
+            if (!onSound.isChecked()) {
+                dataSound.setVisibility(View.GONE);
+            }
+        } else {
             onOffSoundSwitch.setChecked(onSmoothWake.isChecked());
+            if (!onSmoothWake.isChecked()) {
+                dataSound.setVisibility(View.GONE);
+                smoothData.setVisibility(View.GONE);
+            }
         }
-        final LinearLayout dataSound = dialog.findViewById(R.id.data_sound_dialog);
-
-
-        final RecyclerView chosseSound = dialog.findViewById(R.id.recycler_choose_sound);
-
         //TODO костыль 1 recycler на 2 параметра
         final FileChooseAdapter chooseAdapter = new FileChooseAdapter(files, new ArrayList<long[]>(), idsList, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         chosseSound.setAdapter(chooseAdapter);
-
         chosseSound.setLayoutManager(layoutManager);
-        if (!onSound.isChecked()) {
-            onOffSoundSwitch.setChecked(false);
-            dataSound.setVisibility(View.GONE);
-        } else
-            onOffSoundSwitch.setChecked(true);
+
         volumeSound.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -625,8 +665,10 @@ public class AlarmAdd extends Fragment {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 if (mediaPlayer == null) {
-                    mediaPlayer = MediaPlayer.create(getContext(), idsList.get(chooseAdapter.currentposition));
+                    currentMediaId = idsList.get(chooseAdapter.currentposition);
+                    mediaPlayer = MediaPlayer.create(getContext(), currentMediaId);
                     mediaPlayer.start();
+
                 } else {
                     if (!mediaPlayer.isPlaying()) {
                         mediaPlayer.start();
@@ -636,7 +678,7 @@ public class AlarmAdd extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-              //  mediaPlayer.stop();
+                //  mediaPlayer.stop();
             }
         });
         onOffSoundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -645,9 +687,34 @@ public class AlarmAdd extends Fragment {
                 if (isChecked) {
                     dataSound.setVisibility(View.VISIBLE);
                     onOffSoundTextView.setText("Включена");
+                    if (!isSoundDialog) {
+                        prepareSmoothGroup.check(R.id.three_minutes_before);
+                        smoothPrepareTime = 3;
+                        smoothData.setVisibility(View.GONE);
+                    }
                 } else {
                     onOffSoundTextView.setText("Выключена");
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
                     dataSound.setVisibility(View.GONE);
+                    if (!isSoundDialog) {
+                        smoothData.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+        prepareSmoothGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.three_minutes_before:
+                        smoothPrepareTime = 3;
+                        break;
+                    case R.id.five_minutes_before:
+                        smoothPrepareTime = 5;
+                        break;
+                    case R.id.ten_minutes_before:
+                        smoothPrepareTime = 10;
                 }
             }
         });
@@ -657,32 +724,37 @@ public class AlarmAdd extends Fragment {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 if (onOffSoundSwitch.isChecked()) {
-                                    nameSound.setText(files.get(chooseAdapter.currentposition));
                                     volumeOfSound.setProgress(volumeSound.getProgress());
                                     if (isSoundDialog) {
+                                        nameSound.setText(files.get(chooseAdapter.currentposition));
                                         currentIdSound = idsList.get(chooseAdapter.currentposition);
                                     } else {
                                         currentSmoothId = idsList.get(chooseAdapter.currentposition);
+                                        nameSound.setText(files.get(chooseAdapter.currentposition) + " за " + smoothPrepareTime + " минуты.");
                                     }
                                 } else {
                                     nameSound.setVisibility(View.GONE);
                                     volumeOfSound.setVisibility(View.GONE);
                                 }
-                                if (isSoundDialog){
+                                if (isSoundDialog) {
                                     onSound.setChecked(onOffSoundSwitch.isChecked());
-                                }else {
+                                } else {
                                     onSmoothWake.setChecked(onOffSoundSwitch.isChecked());
                                 }
 
-                                if (mediaPlayer != null)
+                                if (mediaPlayer != null) {
                                     mediaPlayer.stop();
+                                    mediaPlayer.release();
+                                }
                             }
                         })
                 .setNegativeButton("Отмена",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                if (mediaPlayer != null)
+                                if (mediaPlayer != null) {
                                     mediaPlayer.stop();
+                                    mediaPlayer.release();
+                                }
                                 dialog.cancel();
                             }
                         });
@@ -702,6 +774,8 @@ public class AlarmAdd extends Fragment {
         final List<long[]> vibratorPatterns = VibratorPatterns.getVibratorData();
         final TextView onOffVibrationTextView = dialog.findViewById(R.id.sound_text_view_dialog);
         final Switch onOffVibrationdSwith = dialog.findViewById(R.id.switch_sound_dialog);
+        final LinearLayout smoothData = dialog.findViewById(R.id.smooth_activation_data_layout);
+        smoothData.setVisibility(View.GONE);
         onOffVibrationdSwith.setChecked(onSound.isChecked());
         final LinearLayout dataVibration = dialog.findViewById(R.id.data_sound_dialog);
         final SeekBar vibrationForce = dialog.findViewById(R.id.volume_sound_dialog_spinner);
@@ -790,14 +864,17 @@ public class AlarmAdd extends Fragment {
                         vibrator.vibrate(patterns.get(position), -1);
                     } else {
                         if (mediaPlayer == null) {
-                            mediaPlayer = MediaPlayer.create(getContext(), idsSound.get(position));
+                            currentMediaId = idsSound.get(position);
+                            mediaPlayer = MediaPlayer.create(getContext(), currentMediaId);
                             mediaPlayer.setLooping(false);
                             mediaPlayer.start();
                         } else {
                             if (mediaPlayer.isPlaying()) {
                                 mediaPlayer.stop();
+                                mediaPlayer.release();
                             }
-                            mediaPlayer = MediaPlayer.create(getContext(), idsSound.get(position));
+                            currentMediaId = idsSound.get(position);
+                            mediaPlayer = MediaPlayer.create(getContext(), currentMediaId);
                             mediaPlayer.setLooping(false);
                             mediaPlayer.start();
                         }

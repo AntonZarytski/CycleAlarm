@@ -30,6 +30,7 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     private int smoothMusicId;
     private int alarmMusicId;
     private int volumeOfAlarmMusic;
+    private int preparedSmoothTime;
     private boolean isActive;
     private boolean isOn;
     private long[] vibratorPattern;
@@ -220,11 +221,17 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         this.vibratorPattern = vibratorPattern;
     }
 
-    public int getVolemeOfSmooth() {
+    public int getVolumeOfSmooth() {
         return volumeOfSmooth;
     }
-
     public void setVolumeOfSmooth(int volumeOfSmooth) {
         this.volumeOfSmooth = volumeOfSmooth;
+    }
+    public int getPreparedSmoothTime() {
+        return preparedSmoothTime;
+    }
+
+    public void setPreparedSmoothTime(int preparedSmoothTime) {
+        this.preparedSmoothTime = preparedSmoothTime;
     }
 }

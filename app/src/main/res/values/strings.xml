@@ -52,6 +52,10 @@
     <string name="fifth_time">5 раз</string>
     <string name="newer">Никогда</string>
     <string name="on">Выключено</string>
+    <string name="time_of_activation">Время активации</string>
+    <string name="three_minutes_before">за 3 минуты</string>
+    <string name="five_minutes_before">за 5 минут</string>
+    <string name="ten_minutes_before">за 10 минут</string>
     <array name="vibrator_names">
         <item>"Basic call"</item>
         <item>"Tick tock"</item>

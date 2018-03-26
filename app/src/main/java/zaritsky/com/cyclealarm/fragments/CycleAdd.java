@@ -66,7 +66,7 @@ public class CycleAdd extends Fragment {
                 } else {
                     List<TypeOfDay> cycle = new ArrayList<>();
                     for (TypeOfDay aTempArr : tempArr) {
-                            cycle.add(aTempArr);
+                        cycle.add(aTempArr);
                     }
                     currentCycle.setCycle(cycle);
                     currentCycle.setName(nameOfCycle.getText().toString());
@@ -159,23 +159,24 @@ public class CycleAdd extends Fragment {
                     currentType = currentCycle.getCycle().get(position);
                     setDataForTypeDayFrame(name, wakeup, currentType.getName(),
                             currentType.getTimeOfWakeUp(), currentType.getColor());
-                    tempArr[position]=currentType;
+                    tempArr[position] = currentType;
                 } else {
                     setDataForTypeDayFrame(name, wakeup, "", "-", defaulColor);
-                    tempArr[position]=null;
+                    tempArr[position] = null;
                 }
             }
             holder.linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (typesList.size() > 0) {
-                        setDataForTypeDayFrame(name, wakeup, typesList.get(numberOfType).getName(),
-                                typesList.get(numberOfType).getTimeOfWakeUp(), typesList.get(numberOfType).getColor());
-                        tempArr[tempPosition] = typesList.get(numberOfType);
-                        numberOfType++;
-                        if (numberOfType == typesList.size()) {
+                        if (numberOfType >= typesList.size()) {
                             numberOfType = 0;
                             setDataForTypeDayFrame(name, wakeup, "", "-", defaulColor);
+                        } else {
+                            setDataForTypeDayFrame(name, wakeup, typesList.get(numberOfType).getName(),
+                                    typesList.get(numberOfType).getTimeOfWakeUp(), typesList.get(numberOfType).getColor());
+                            tempArr[tempPosition] = typesList.get(numberOfType);
+                            numberOfType++;
                         }
                     }
                 }
