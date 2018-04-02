@@ -112,6 +112,10 @@ public class WeatherDataLoader extends IntentService {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    public void onStopService() {
+        Intent intent = new Intent(getBaseContext(), WeatherDataLoader.class);
+        stopService(intent);
+    }
 
     public static JSONObject getJsonObject() {
         return jsonObject;

@@ -4,18 +4,23 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.Calendar;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class Alarm extends BroadcastReceiver implements Serializable{
-    private Calendar timeOfActiveCalendar;
+    private Calendar currentCalendar;
     private String name;
     private String note;
     private Cycle datesOfActiveCycle;
+    private List<Calendar> calendar;
     private String nameOfVibroType;
     private String nameOfMusic;
     private String nameOfSmoothMusic;
@@ -39,12 +44,26 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     public void setActive(boolean active) {
         isActive = active;
     }
-
-    public Alarm(Calendar timeOfActiveCalendar, String note, Cycle cycle) {
+    //TODO ошибка в 61 строке без анотации
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public Alarm(Calendar currentCalenadar, String note, Cycle cycle) {
         datesOfActiveCycle = cycle;
-        this.timeOfActiveCalendar = timeOfActiveCalendar;
+        this.currentCalendar = currentCalenadar;
         this.note = note;
         this.isActive = true;
+        calendar = new ArrayList<>();
+//        for (int i = 0; i <cycle.getCycle().size() ; i++) {
+//            TypeOfDay temp = cycle.getCycle().get(i);
+//            if (temp!=null) {
+//                calendar.add(i, Calendar.getInstance());
+//                calendar.get(i).clear(Calendar.HOUR);
+//                calendar.get(i).clear(Calendar.MINUTE);
+//                calendar.get(i).clear(Calendar.SECOND);
+//                calendar.get(i).add(Calendar.HOUR, temp.getWakeUp().get(Calendar.HOUR));
+//                calendar.get(i).add(Calendar.MINUTE, temp.getWakeUp().get(Calendar.MINUTE));
+//            }
+//        }
+
     }
 
     @Override
@@ -63,15 +82,15 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     @SuppressLint("NewApi")
     public String getFormatedTime(){
         return new SimpleDateFormat("H:mm",
-                new Locale("ru", "RU")).format(timeOfActiveCalendar.getTime());
+                new Locale("ru", "RU")).format(currentCalendar.getTime());
     }
 
-    public Calendar getTimeOfActiveCalendar() {
-        return timeOfActiveCalendar;
+    public Calendar getCurrentCalendar() {
+        return currentCalendar;
     }
 
-    public void setTimeOfActiveCalendar(Calendar timeOfActiveCalendar) {
-        this.timeOfActiveCalendar = timeOfActiveCalendar;
+    public void setCurrentCalendar(Calendar currentCalendar) {
+        this.currentCalendar = currentCalendar;
     }
 
     public String getNote() {

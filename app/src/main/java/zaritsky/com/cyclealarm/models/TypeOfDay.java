@@ -11,16 +11,16 @@ import java.util.Locale;
 
 public class TypeOfDay implements Serializable {
    private String name;
-   private Calendar wakeUp;
+   private Alarm alarmOfType;
    private String timeOfWakeUp;
    private int color;
 
     @SuppressLint("NewApi")
-    public TypeOfDay(String name, Calendar wakeUp, int color) {
+    public TypeOfDay(String name, Alarm  alarmOfType, int color) {
         this.name = name;
-        this.wakeUp = wakeUp;
+        this. alarmOfType =  alarmOfType;
         //TODO рахобраться с временем
-        timeOfWakeUp = new SimpleDateFormat("H:mm", new Locale("ru", "RU")).format(wakeUp.getTime());
+   //     timeOfWakeUp = new SimpleDateFormat("H:mm", new Locale("ru", "RU")).format(wakeUp.getTime());
         this.color = color;
     }
     public TypeOfDay(){
@@ -33,14 +33,6 @@ public class TypeOfDay implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Calendar getWakeUp() {
-        return wakeUp;
-    }
-
-    public void setWakeUp(Calendar wakeUp) {
-        this.wakeUp = wakeUp;
     }
 
     public void setTimeOfWakeUp(String timeOfWakeUp) {
@@ -57,5 +49,13 @@ public class TypeOfDay implements Serializable {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public Alarm getAlarmOfType() {
+        return alarmOfType;
+    }
+
+    public void setAlarmOfType(Alarm alarmOfType) {
+        this.alarmOfType = alarmOfType;
     }
 }

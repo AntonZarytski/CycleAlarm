@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.icu.util.Calendar;
-import android.icu.util.TimeZone;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -20,7 +18,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,12 +37,15 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.models.Alarm;
@@ -60,12 +60,14 @@ import static android.content.Context.AUDIO_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 
 public class AlarmAdd extends Fragment {
-    private static final String CURRENT_ALARM_POSITION = "CURRENT_ALARM_POSITION";
+    public static final String CURRENT_ALARM_POSITION = "CURRENT_ALARM_POSITION";
     private final String ALARMFILE = "AlarmsList";
     private final String MP_IS_PLAY_FLAG = "MP_IS_PLAY_FLAG";
     private final String CURRENT_ID_FLAG = "CURRENT_ID_FLAG";
     private final String CURRENT_TIME_PLAY_FLAG = "CURRENT_TIME_PLAY_FLAG";
     private final String LOG_TAG = "myLogs";
+    private final long MILLS_IN_HOUR = 3600000;
+    private final long MILLS_IN_MIN = 60000;
     private Alarm currentAlarm;
     private List<Cycle> cycleList;
     private Cycle currentCycle;
@@ -91,6 +93,10 @@ public class AlarmAdd extends Fragment {
     private TextView nameOfSmoothMelody;
     private Switch onScoringOfTime;
     private LayoutInflater inflater;
+    private LinearLayout weekCycleWakeUp;
+    private LinearLayout dataOfRepeatsLayout;
+    private Fragment child;
+    private boolean fromTypeDayAddFragment;
     int smoothPrepareTime = 0;
     int pause = 0;
     int repeat = 0;
@@ -114,7 +120,17 @@ public class AlarmAdd extends Fragment {
         initListeners();
         if (currentAlarm != null) {
             currentAlarmPosition = getArguments().getInt(CURRENT_ALARM_POSITION);
+            child = getFragmentManager().getFragment(getArguments(), TypeDayAdd.TYPE_DAY_ADD_FRAGMENT);
+            fromTypeDayAddFragment = getArguments().getBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, false);
             setCurrentParameters();
+        }else{
+            if (getArguments() != null) {
+                child = getFragmentManager().getFragment(getArguments(), TypeDayAdd.TYPE_DAY_ADD_FRAGMENT);
+                fromTypeDayAddFragment = getArguments().getBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, false);
+            }
+        }
+        if (fromTypeDayAddFragment){
+           dataOfRepeatsLayout.setVisibility(View.GONE);
         }
         if (savedInstanceState != null) {
             currentMediaId = savedInstanceState.getInt(CURRENT_ID_FLAG);
@@ -155,12 +171,14 @@ public class AlarmAdd extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mediaPlayer.isPlaying()) {
-            outState.putInt(CURRENT_ID_FLAG, currentMediaId);
-            outState.putBoolean(MP_IS_PLAY_FLAG, true);
-            outState.putInt(CURRENT_TIME_PLAY_FLAG, mediaPlayer.getCurrentPosition());
-            mediaPlayer.stop();
-            mediaPlayer.release();
+        if (mediaPlayer!=null) {
+            if (mediaPlayer.isPlaying()) {
+                outState.putInt(CURRENT_ID_FLAG, currentMediaId);
+                outState.putBoolean(MP_IS_PLAY_FLAG, true);
+                outState.putInt(CURRENT_TIME_PLAY_FLAG, mediaPlayer.getCurrentPosition());
+                mediaPlayer.stop();
+                mediaPlayer.release();
+            }
         }
         super.onSaveInstanceState(outState);
     }
@@ -233,6 +251,8 @@ public class AlarmAdd extends Fragment {
         nameOfSmoothMelody = view.findViewById(R.id.smooth_stand_up_text_view);
         onScoringOfTime = view.findViewById(R.id.scoring_of_time_switch);
         volumeOfSmooth = view.findViewById(R.id.volume_of_smooth);
+        weekCycleWakeUp = view.findViewById(R.id.week_cycle_wake_up_layout);
+        dataOfRepeatsLayout = view.findViewById(R.id.data_of_repeats_layout);
         if (currentAlarm == null) {
             volumeOfSound.setVisibility(View.GONE);
             nameOfSound.setVisibility(View.GONE);
@@ -256,12 +276,12 @@ public class AlarmAdd extends Fragment {
             @Override
             public void onClick(View v) {
                 calendar = Calendar.getInstance();
-                //TODO сделать определение местоположения и определять временную зону
-                TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
+                TimeZone tz = TimeZone.getDefault();
                 calendar.setTimeZone(tz);
-
-                calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
-                calendar.set(Calendar.MINUTE, timePicker.getMinute());
+                calendar.clear(Calendar.HOUR_OF_DAY);
+                calendar.clear(Calendar.MINUTE);
+                calendar.add(Calendar.HOUR_OF_DAY, timePicker.getHour());
+                calendar.add(Calendar.MINUTE, timePicker.getMinute());
                 if (currentAlarm == null) {
                     currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString(), currentCycle);
                     currentAlarm.setPause(onPause.isChecked());
@@ -278,18 +298,15 @@ public class AlarmAdd extends Fragment {
                     currentAlarm.setSmoothMusicId(currentSmoothId);
                     currentAlarm.setVolumeOfSmooth(volumeOfSmooth.getProgress());
                     currentAlarm.setVolumeOfAlarmMusic(volumeOfSound.getProgress());
-
                     currentAlarm.setNameOfMusic(nameOfSound.getText().toString());
                     currentAlarm.setNameOfVibroType(nameOfVibro.getText().toString());
                     currentAlarm.setAlarmMusicId(currentIdSound);
                     currentAlarm.setVibratorPattern(currentPattern);
-
                     alarmList.addAlarm(currentAlarm);
-                    currentAlarm = null;
                 } else {
                     alarmList.changeAlarm(currentAlarm, currentAlarmPosition);
-                    currentAlarm = null;
                 }
+                int currentAlarmPosition = alarmList.getAlarmPosition(currentAlarm);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -305,10 +322,21 @@ public class AlarmAdd extends Fragment {
                 }).start();
                 Intent alarmIntent = createIntent("action 1", "extra 1");
                 PendingIntent pIntent1 = PendingIntent.getBroadcast(getContext(), 0, alarmIntent, 0);
-                //long hour = timePicker.getHour()*60000*60;
-                long min = timePicker.getMinute() * 60000;
-                Log.d(LOG_TAG, "start from " + min + " mills ");
-                alarmManager.set(AlarmManager.RTC_WAKEUP, min, pIntent1);
+                long minute = calendar.get(Calendar.MINUTE);
+                long hour = calendar.get(Calendar.HOUR);
+                long hourtemp = timePicker.getHour()-hour;
+                long minutetemp = timePicker.getMinute()-minute;
+                long temptime= hourtemp*MILLS_IN_HOUR+minutetemp*MILLS_IN_MIN;
+                alarmManager.set(AlarmManager.RTC_WAKEUP, temptime, pIntent1);
+                Toast.makeText(getContext(), "будильник сработает через " + hourtemp + " час " + minutetemp +" минут", Toast.LENGTH_LONG).show();
+                currentAlarm = null;
+                if (fromTypeDayAddFragment){
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, true);
+                    bundle.putInt(CURRENT_ALARM_POSITION, currentAlarmPosition);
+                    child.setArguments(bundle);
+                }
+                AlarmAdd.this.getFragmentManager().popBackStack();
             }
         });
         nameOfAlarm.setOnClickListener(new View.OnClickListener() {
@@ -465,7 +493,6 @@ public class AlarmAdd extends Fragment {
                 }
             }
         });
-
     }
 
     private void shouPauseDialog() {

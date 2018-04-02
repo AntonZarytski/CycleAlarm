@@ -8,6 +8,7 @@
     <string name="temp_res2_for_calendar_fragment">При нажатии на день тут отображаются события на этот день(будильник, напоминалка)</string>
     <string name="calendar">Календарь</string>
     <string name="alarms">Будильники</string>
+    <string name="alarm">Будильник</string>
     <string name="navigation_drawer_open">Bar open</string>
     <string name="navigation_drawer_close">Bar_close</string>
     <string name="my_graphics">Мои графики</string>
@@ -52,10 +53,18 @@
     <string name="fifth_time">5 раз</string>
     <string name="newer">Никогда</string>
     <string name="on">Выключено</string>
-    <string name="time_of_activation">Время активации</string>
+    <string name="time_of_activation">Время пробуждения</string>
     <string name="three_minutes_before">за 3 минуты</string>
     <string name="five_minutes_before">за 5 минут</string>
     <string name="ten_minutes_before">за 10 минут</string>
+    <string name="smooth_wake_up">Плавное пробуждение</string>
+    <string name="monday_short">Пн</string>
+    <string name="tuesday_short">Вт</string>
+    <string name="wednesday_short">Ср</string>
+    <string name="thursday_short">Чт</string>
+    <string name="friday_short">Пт</string>
+    <string name="saturday_short">Сб</string>
+    <string name="sunday_short">Вс</string>
     <array name="vibrator_names">
         <item>"Basic call"</item>
         <item>"Tick tock"</item>

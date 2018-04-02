@@ -71,9 +71,6 @@ public class ArarmIsActive extends AppCompatActivity  {
                         @SuppressLint("ResourceType")
                         @Override
                         public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    getString(R.string.place_not_found),
-                                    Toast.LENGTH_LONG).show();
                         }
                     });
                 }else {
