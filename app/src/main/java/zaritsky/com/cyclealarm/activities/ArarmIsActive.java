@@ -20,9 +20,13 @@ import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.models.WeatherMap;
 import zaritsky.com.cyclealarm.services.WeatherDataLoader;
 
-public class ArarmIsActive extends AppCompatActivity  {
+/**
+ * This activity will start, when alarm will by activated.
+ * Activity start by AlarmReceiver
+ */
+public class ArarmIsActive extends AppCompatActivity {
     private static final String FONT_FILENAME = "fonts/weather.ttf";
-//    private final Handler handler = new Handler();
+    //    private final Handler handler = new Handler();
     private TextView cityName;
     private TextView temperature;
     private TextView wind;
@@ -35,7 +39,8 @@ public class ArarmIsActive extends AppCompatActivity  {
     private JSONObject jsonObject;
     private TextView weatherIcon;
     private Typeface weatherFont;
-    private final Handler handler = new Handler ();
+    private final Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,19 +66,22 @@ public class ArarmIsActive extends AppCompatActivity  {
 
     }
 
+    /**
+     * This method
+     */
     private void updateWeatherData(final JSONObject jsonObject) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 final JSONObject json = jsonObject;
                 if (json == null) {
+                    //TODO действие на случай JSON == null
                     handler.post(new Runnable() {
-                        @SuppressLint("ResourceType")
                         @Override
                         public void run() {
                         }
                     });
-                }else {
+                } else {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -85,6 +93,9 @@ public class ArarmIsActive extends AppCompatActivity  {
         }).start();
     }
 
+    /**
+     * This method fills views by JSON`s data
+     */
     @SuppressLint("SetTextI18n")
     private void renderWeather(JSONObject json) {
         try {
@@ -96,7 +107,7 @@ public class ArarmIsActive extends AppCompatActivity  {
             cityName.setText(city);
             humidity.setText(map.getHumidity() + " %");
             preasure.setText(Math.round(map.getPressure()) + " мм рт. ст.");
-            temperature.setText(Math.round(map.getTemp())+ " ℃");
+            temperature.setText(Math.round(map.getTemp()) + " ℃");
             rain.setText(detailsText);
             cloud.setText("");
             wind.setText(map.getWindSpeed() + " м/с");
@@ -105,15 +116,19 @@ public class ArarmIsActive extends AppCompatActivity  {
                     json.getJSONObject("sys").getLong("sunset") * 1000);
 
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
+    /**
+     * This method sets icon for weatheRicon TextView
+     */
     private void setWeatherIcon(int actualId, long sunrise, long sunset) {
         int id = actualId / 100; // Упрощение кодов (int оставляет только целочисленное значение)
         String icon = "";
         if (actualId == 800) {
             long currentTime = new Date().getTime();
+            //TODO сделать адекватные иконки, (ресурсы String)
             if (currentTime >= sunrise && currentTime < sunset) {
                 icon = getString(R.string.weather_sunny);
             } else {

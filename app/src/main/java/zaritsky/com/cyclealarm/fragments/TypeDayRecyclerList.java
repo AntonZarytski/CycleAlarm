@@ -49,7 +49,7 @@ public class TypeDayRecyclerList extends Fragment {
             @Override
             public void onClick(View v) {
                 TypeDayAdd editTypeDay = new TypeDayAdd();
-                callBackAvtivity.replaceFragments(R.id.content_main, editTypeDay);
+                callBackAvtivity.changeFragments(R.id.content_main, editTypeDay);
             }
         });
 

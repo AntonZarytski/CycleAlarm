@@ -1,4 +1,4 @@
-package zaritsky.com.cyclealarm.models;
+package zaritsky.com.cyclealarm.receiver;
 
 
 import android.content.BroadcastReceiver;

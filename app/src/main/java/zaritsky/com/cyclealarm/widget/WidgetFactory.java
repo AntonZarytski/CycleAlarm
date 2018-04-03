@@ -19,13 +19,13 @@ import zaritsky.com.cyclealarm.models.AlarmList;
 class WidgetFactory implements RemoteViewsService.RemoteViewsFactory {
     final String ACTION_ON_CLICK = "android.appwidget.action.APPWIDGET_UPDATE";
     public final static String ITEM_POSITION = "item_position";
-    List<Alarm>alarms;
-    ArrayList<String> timeWakeUp;
-    ArrayList<String> notesAlarm;
-    ArrayList<Boolean> alarmIsOn;
-    Context context;
-    SimpleDateFormat sdf;
-    int widgetID;
+    private List<Alarm>alarms;
+    private ArrayList<String> timeWakeUp;
+    private ArrayList<String> notesAlarm;
+    private ArrayList<Boolean> alarmIsOn;
+    private Context context;
+    private SimpleDateFormat sdf;
+    private int widgetID;
 
     WidgetFactory(Context ctx, Intent intent) {
         context = ctx;

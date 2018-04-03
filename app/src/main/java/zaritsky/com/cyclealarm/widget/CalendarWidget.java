@@ -29,11 +29,11 @@ import zaritsky.com.cyclealarm.models.AlarmList;
 public class CalendarWidget extends AppWidgetProvider {
     final String ACTION_ON_CLICK = "android.appwidget.action.APPWIDGET_UPDATE";
     public final static String ITEM_POSITION = "item_position";
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-    List<Alarm> alarms;
-    ArrayList<String> timeWakeUp;
-    ArrayList<String> notesAlarm;
-    ArrayList<Boolean> alarmIsOn;
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    private List<Alarm> alarms;
+    private ArrayList<String> timeWakeUp;
+    private ArrayList<String> notesAlarm;
+    private ArrayList<Boolean> alarmIsOn;
 
     @Override
     public void onEnabled(Context context) {

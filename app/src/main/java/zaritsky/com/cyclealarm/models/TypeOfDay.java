@@ -14,13 +14,13 @@ public class TypeOfDay implements Serializable {
    private Alarm alarmOfType;
    private String timeOfWakeUp;
    private int color;
+   private int alarmPosition;
 
     @SuppressLint("NewApi")
     public TypeOfDay(String name, Alarm  alarmOfType, int color) {
         this.name = name;
         this. alarmOfType =  alarmOfType;
-        //TODO рахобраться с временем
-   //     timeOfWakeUp = new SimpleDateFormat("H:mm", new Locale("ru", "RU")).format(wakeUp.getTime());
+        this.timeOfWakeUp = alarmOfType.getFormatedTime();
         this.color = color;
     }
     public TypeOfDay(){
@@ -57,5 +57,13 @@ public class TypeOfDay implements Serializable {
 
     public void setAlarmOfType(Alarm alarmOfType) {
         this.alarmOfType = alarmOfType;
+    }
+
+    public int getAlarmPosition() {
+        return alarmPosition;
+    }
+
+    public void setAlarmPosition(int alarmPosition) {
+        this.alarmPosition = alarmPosition;
     }
 }

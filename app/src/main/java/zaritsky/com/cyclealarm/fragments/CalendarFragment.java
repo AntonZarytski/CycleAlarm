@@ -30,12 +30,12 @@ import zaritsky.com.cyclealarm.models.CycleList;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 
 public class CalendarFragment extends Fragment {
-    EventDecorator decorator;
-    MaterialCalendarView calendarView;
-    Spinner cycleSelector;
-    Cycle currentCycle;
-    List<Cycle> cycleList;
-    List<TypeOfDay> typeCycle;
+    private EventDecorator decorator;
+    private MaterialCalendarView calendarView;
+    private Spinner cycleSelector;
+    private Cycle currentCycle;
+    private List<Cycle> cycleList;
+    private List<TypeOfDay> typeCycle;
 
     @Nullable
     @Override

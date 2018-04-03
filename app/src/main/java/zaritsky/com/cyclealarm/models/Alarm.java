@@ -15,15 +15,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class Alarm extends BroadcastReceiver implements Serializable{
+public class Alarm extends BroadcastReceiver implements Serializable {
     private Calendar currentCalendar;
     private String name;
     private String note;
-    private Cycle datesOfActiveCycle;
+    private boolean[] weekCycle;
     private List<Calendar> calendar;
     private String nameOfVibroType;
     private String nameOfMusic;
     private String nameOfSmoothMusic;
+    private boolean isCustomCycle;
     private boolean isPause;
     private boolean isMusic;
     private boolean isVibro;
@@ -44,26 +45,13 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     public void setActive(boolean active) {
         isActive = active;
     }
-    //TODO ошибка в 61 строке без анотации
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public Alarm(Calendar currentCalenadar, String note, Cycle cycle) {
-        datesOfActiveCycle = cycle;
+
+    public Alarm(Calendar currentCalenadar, String note, boolean isCustomCycle) {
         this.currentCalendar = currentCalenadar;
         this.note = note;
         this.isActive = true;
+        this.isCustomCycle = isCustomCycle;
         calendar = new ArrayList<>();
-//        for (int i = 0; i <cycle.getCycle().size() ; i++) {
-//            TypeOfDay temp = cycle.getCycle().get(i);
-//            if (temp!=null) {
-//                calendar.add(i, Calendar.getInstance());
-//                calendar.get(i).clear(Calendar.HOUR);
-//                calendar.get(i).clear(Calendar.MINUTE);
-//                calendar.get(i).clear(Calendar.SECOND);
-//                calendar.get(i).add(Calendar.HOUR, temp.getWakeUp().get(Calendar.HOUR));
-//                calendar.get(i).add(Calendar.MINUTE, temp.getWakeUp().get(Calendar.MINUTE));
-//            }
-//        }
-
     }
 
     @Override
@@ -71,16 +59,8 @@ public class Alarm extends BroadcastReceiver implements Serializable{
         Log.d("LOG_TAG", "ALARM_IS_ON");
     }
 
-    /**set/get*/
-//    public Date getTimeOfActive() {
-//        return timeOfActive;
-//    }
-//
-//    public void setTimeOfActive(Date timeOfActive) {
-//        this.timeOfActive = timeOfActive;
-//    }
     @SuppressLint("NewApi")
-    public String getFormatedTime(){
+    public String getFormatedTime() {
         return new SimpleDateFormat("H:mm",
                 new Locale("ru", "RU")).format(currentCalendar.getTime());
     }
@@ -99,14 +79,6 @@ public class Alarm extends BroadcastReceiver implements Serializable{
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public Cycle getDatesOfActiveCycle() {
-        return datesOfActiveCycle;
-    }
-
-    public void setDatesOfActiveCycle(Cycle datesOfActiveCycle) {
-        this.datesOfActiveCycle = datesOfActiveCycle;
     }
 
     public boolean isMusic() {
@@ -164,6 +136,7 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     public void setVolumeOfAlarmMusic(int volumeOfAlarmMusic) {
         this.volumeOfAlarmMusic = volumeOfAlarmMusic;
     }
+
     public boolean isActive() {
         return isActive;
     }
@@ -243,14 +216,40 @@ public class Alarm extends BroadcastReceiver implements Serializable{
     public int getVolumeOfSmooth() {
         return volumeOfSmooth;
     }
+
     public void setVolumeOfSmooth(int volumeOfSmooth) {
         this.volumeOfSmooth = volumeOfSmooth;
     }
+
     public int getPreparedSmoothTime() {
         return preparedSmoothTime;
     }
 
     public void setPreparedSmoothTime(int preparedSmoothTime) {
         this.preparedSmoothTime = preparedSmoothTime;
+    }
+
+    public List<Calendar> getCalendar() {
+        return calendar;
+    }
+
+    public void setCalendar(List<Calendar> calendar) {
+        this.calendar = calendar;
+    }
+
+    public boolean isCustomCycle() {
+        return isCustomCycle;
+    }
+
+    public void setCustomCycle(boolean customCycle) {
+        isCustomCycle = customCycle;
+    }
+
+    public boolean[] getWeekCycle() {
+        return weekCycle;
+    }
+
+    public void setWeekCycle(boolean[] weekCycle) {
+        this.weekCycle = weekCycle;
     }
 }

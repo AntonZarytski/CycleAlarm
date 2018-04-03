@@ -15,19 +15,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
-
-import static android.provider.Telephony.Mms.Part.FILENAME;
 
 public class CycleRecyclerList extends Fragment{
         private AbleToChangeFragment callBackAvtivity;
@@ -56,7 +49,7 @@ public class CycleRecyclerList extends Fragment{
             @Override
             public void onClick(View view) {
                 CycleAdd cycleAdd = new CycleAdd();
-                callBackAvtivity.replaceFragments(R.id.content_main, cycleAdd);
+                callBackAvtivity.changeFragments(R.id.content_main, cycleAdd);
                 Toast toast = Toast.makeText(view.getContext(), "Плавающая кнопка", Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -127,7 +120,7 @@ public class CycleRecyclerList extends Fragment{
                 @Override
                 public void onClick(View v) {
                     CycleAdd cycleAdd = CycleAdd.newInstance(position);
-                    callBackAvtivity.replaceFragments(R.id.content_main, cycleAdd);
+                    callBackAvtivity.changeFragments(R.id.content_main, cycleAdd);
                 }
             });
         }

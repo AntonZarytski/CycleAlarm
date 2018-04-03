@@ -24,8 +24,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -50,15 +47,17 @@ import java.util.TimeZone;
 import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.models.Alarm;
 import zaritsky.com.cyclealarm.models.AlarmList;
-import zaritsky.com.cyclealarm.models.AlarmReceiver;
-import zaritsky.com.cyclealarm.models.Cycle;
-import zaritsky.com.cyclealarm.models.CycleList;
+import zaritsky.com.cyclealarm.receiver.AlarmReceiver;
 import zaritsky.com.cyclealarm.models.VibratorPatterns;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.AUDIO_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 
+/**
+ * This fragment may be start with different inflate of view(for user`s custom
+ * cycleType of for usual weekCycle), there is create and add(or change) Alarm-model
+ */
 public class AlarmAdd extends Fragment {
     public static final String CURRENT_ALARM_POSITION = "CURRENT_ALARM_POSITION";
     private final String ALARMFILE = "AlarmsList";
@@ -69,8 +68,6 @@ public class AlarmAdd extends Fragment {
     private final long MILLS_IN_HOUR = 3600000;
     private final long MILLS_IN_MIN = 60000;
     private Alarm currentAlarm;
-    private List<Cycle> cycleList;
-    private Cycle currentCycle;
     private int currentAlarmPosition;
     private AlarmList alarmList;
     private AlarmManager alarmManager;
@@ -80,7 +77,6 @@ public class AlarmAdd extends Fragment {
     private TextView dataeOfNearestActive;
     private TextView nameOfAlarm;
     private TextView notificationOfAlarm;
-    private Spinner periodOfRecycler;
     private Switch onPause;
     private TextView durationOfPause;
     private Switch onSound;
@@ -96,19 +92,27 @@ public class AlarmAdd extends Fragment {
     private LinearLayout weekCycleWakeUp;
     private LinearLayout dataOfRepeatsLayout;
     private Fragment child;
-    private boolean fromTypeDayAddFragment;
-    int smoothPrepareTime = 0;
-    int pause = 0;
-    int repeat = 0;
-    int currentIdSound;
-    long[] currentPattern;
-    int currentSmoothId;
-    int currentMediaId;
-    Vibrator vibrator;
+    private RelativeLayout mondayLayout;
+    private RelativeLayout tuesdayLayout;
+    private RelativeLayout wednesdayLayout;
+    private RelativeLayout thursdayLayout;
+    private RelativeLayout fridayLayout;
+    private RelativeLayout saturdayLayout;
+    private RelativeLayout sundayLayout;
+    private boolean[] weekCycle = new boolean[7];
+    private boolean isCustomCycle;
+    private int smoothPrepareTime = 0;
+    private int pause = 0;
+    private int repeat = 0;
+    private int currentIdSound;
+    private long[] currentPattern;
+    private int currentSmoothId;
+    private int currentMediaId;
+    private Vibrator vibrator;
     //TODO костыль, или 2 раза делать recycler view
-    boolean isVibrationDialogShow = false;
-    MediaPlayer mediaPlayer;
-    AudioManager audioManager;
+    private boolean isVibrationDialogShow = false;
+    private MediaPlayer mediaPlayer;
+    private AudioManager audioManager;
 
     @Nullable
     @Override
@@ -118,19 +122,20 @@ public class AlarmAdd extends Fragment {
         alarmList = AlarmList.getInstance(getContext());
         initViews(view);
         initListeners();
+        /**if currentAlarm != null, it`s mean that fragment was started by selected View`s(Alarm) position*/
         if (currentAlarm != null) {
             currentAlarmPosition = getArguments().getInt(CURRENT_ALARM_POSITION);
             child = getFragmentManager().getFragment(getArguments(), TypeDayAdd.TYPE_DAY_ADD_FRAGMENT);
-            fromTypeDayAddFragment = getArguments().getBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, false);
             setCurrentParameters();
-        }else{
+        } else {
+            /**check that this fragment has been started for user`s custom cycleType of for usual weekCycle*/
             if (getArguments() != null) {
                 child = getFragmentManager().getFragment(getArguments(), TypeDayAdd.TYPE_DAY_ADD_FRAGMENT);
-                fromTypeDayAddFragment = getArguments().getBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, false);
+                isCustomCycle = getArguments().getBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, false);
             }
         }
-        if (fromTypeDayAddFragment){
-           dataOfRepeatsLayout.setVisibility(View.GONE);
+        if (isCustomCycle) {
+            dataOfRepeatsLayout.setVisibility(View.GONE);
         }
         if (savedInstanceState != null) {
             currentMediaId = savedInstanceState.getInt(CURRENT_ID_FLAG);
@@ -140,38 +145,17 @@ public class AlarmAdd extends Fragment {
                 mediaPlayer.start();
             }
         }
+        /**initial services*/
         alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
         audioManager = (AudioManager) getContext().getSystemService(AUDIO_SERVICE);
         vibrator = (Vibrator) getContext().getSystemService(VIBRATOR_SERVICE);
-
-        cycleList = CycleList.getInstance(getContext()).getCycleList();
-        List<CharSequence> cyclesNames = new ArrayList<>();
-        for (int i = 0; i < cycleList.size(); i++) {
-            cyclesNames.add(cycleList.get(i).getName());
-        }
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, cyclesNames);
-        periodOfRecycler.setAdapter(adapter);
-        periodOfRecycler.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (!cycleList.isEmpty())
-                    currentCycle = cycleList.get(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                //TODO цикл неделя
-                if (!cycleList.isEmpty())
-                    currentCycle = cycleList.get(0);
-            }
-        });
         return view;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mediaPlayer!=null) {
+        if (mediaPlayer != null) {
             if (mediaPlayer.isPlaying()) {
                 outState.putInt(CURRENT_ID_FLAG, currentMediaId);
                 outState.putBoolean(MP_IS_PLAY_FLAG, true);
@@ -183,6 +167,9 @@ public class AlarmAdd extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * set parameters for alarm
+     */
     private void setCurrentParameters() {
         String wakeUpTime[] = currentAlarm.getFormatedTime().split(":");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -192,8 +179,6 @@ public class AlarmAdd extends Fragment {
         dataeOfNearestActive.setText("TODO ближайшая дата сработки");
         nameOfAlarm.setText(currentAlarm.getName());
         notificationOfAlarm.setText(currentAlarm.getNote());
-        currentCycle = currentAlarm.getDatesOfActiveCycle();
-        periodOfRecycler.setPrompt(currentCycle.getName());
         pause = currentAlarm.getLongPause();
         repeat = currentAlarm.getRepeatTimePause();
         nameOfSound.setText(currentAlarm.getNameOfMusic());
@@ -230,6 +215,27 @@ public class AlarmAdd extends Fragment {
             nameOfSmoothMelody.setVisibility(View.GONE);
             volumeOfSmooth.setVisibility(View.GONE);
         }
+        isCustomCycle = currentAlarm.isCustomCycle();
+        if (!isCustomCycle) {
+            weekCycle = currentAlarm.getWeekCycle();
+            weekCycleWakeUp.setVisibility(View.VISIBLE);
+            if (weekCycle[0])
+                mondayLayout.setAlpha(1f);
+            if (weekCycle[1])
+                tuesdayLayout.setAlpha(1f);
+            if (weekCycle[2])
+                wednesdayLayout.setAlpha(1f);
+            if (weekCycle[3])
+                thursdayLayout.setAlpha(1f);
+            if (weekCycle[4])
+                fridayLayout.setAlpha(1f);
+            if (weekCycle[5])
+                saturdayLayout.setAlpha(1f);
+            if (weekCycle[6])
+                sundayLayout.setAlpha(1f);
+        } else {
+            weekCycleWakeUp.setVisibility(View.GONE);
+        }
     }
 
     private void initViews(View view) {
@@ -239,7 +245,7 @@ public class AlarmAdd extends Fragment {
         dataeOfNearestActive = view.findViewById(R.id.date_of_nearest_active_text_view);
         nameOfAlarm = view.findViewById(R.id.name_of_alarm_signal);
         notificationOfAlarm = view.findViewById(R.id.notification_of_alarm);
-        periodOfRecycler = view.findViewById(R.id.recycler_type_value);
+
         onPause = view.findViewById(R.id.pause_switch);
         durationOfPause = view.findViewById(R.id.value_of_pause_text_view);
         onSound = view.findViewById(R.id.sound_switch);
@@ -261,8 +267,26 @@ public class AlarmAdd extends Fragment {
             nameOfSmoothMelody.setVisibility(View.GONE);
             volumeOfSmooth.setVisibility(View.GONE);
         }
+        mondayLayout = view.findViewById(R.id.monday_layout);
+        mondayLayout.setAlpha(0.2f);
+        tuesdayLayout = view.findViewById(R.id.tuesday_layout);
+        tuesdayLayout.setAlpha(0.2f);
+        wednesdayLayout = view.findViewById(R.id.wednesday_layout);
+        wednesdayLayout.setAlpha(0.2f);
+        thursdayLayout = view.findViewById(R.id.thursday_layout);
+        thursdayLayout.setAlpha(0.2f);
+        fridayLayout = view.findViewById(R.id.friday_layout);
+        fridayLayout.setAlpha(0.2f);
+        saturdayLayout = view.findViewById(R.id.saturday_layout);
+        saturdayLayout.setAlpha(0.2f);
+        sundayLayout = view.findViewById(R.id.sunday_layout);
+        sundayLayout.setAlpha(0.2f);
+
     }
 
+    /**
+     * intent for AlarmReceiver
+     */
     Intent createIntent(String action, String extra) {
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
         intent.setAction(action);
@@ -271,6 +295,7 @@ public class AlarmAdd extends Fragment {
     }
 
     private void initListeners() {
+        /**save alarm*/
         saveAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -283,7 +308,7 @@ public class AlarmAdd extends Fragment {
                 calendar.add(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.add(Calendar.MINUTE, timePicker.getMinute());
                 if (currentAlarm == null) {
-                    currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString(), currentCycle);
+                    currentAlarm = new Alarm(calendar, notificationOfAlarm.getText().toString(), isCustomCycle);
                     currentAlarm.setPause(onPause.isChecked());
                     currentAlarm.setMusic(onSound.isChecked());
                     currentAlarm.setVibro(onVibro.isChecked());
@@ -302,11 +327,17 @@ public class AlarmAdd extends Fragment {
                     currentAlarm.setNameOfVibroType(nameOfVibro.getText().toString());
                     currentAlarm.setAlarmMusicId(currentIdSound);
                     currentAlarm.setVibratorPattern(currentPattern);
+                    if (!isCustomCycle) {
+                        currentAlarm.setWeekCycle(weekCycle);
+                    }
+                    /**if its new alarm, than add it to alarmList*/
                     alarmList.addAlarm(currentAlarm);
                 } else {
+                    /**or change old alarm by new*/
                     alarmList.changeAlarm(currentAlarm, currentAlarmPosition);
                 }
                 int currentAlarmPosition = alarmList.getAlarmPosition(currentAlarm);
+                /**write alarmList in internal memory*/
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -320,17 +351,18 @@ public class AlarmAdd extends Fragment {
                         }
                     }
                 }).start();
+                //TODO написать грамотный AlarmReceiver
                 Intent alarmIntent = createIntent("action 1", "extra 1");
                 PendingIntent pIntent1 = PendingIntent.getBroadcast(getContext(), 0, alarmIntent, 0);
                 long minute = calendar.get(Calendar.MINUTE);
                 long hour = calendar.get(Calendar.HOUR);
-                long hourtemp = timePicker.getHour()-hour;
-                long minutetemp = timePicker.getMinute()-minute;
-                long temptime= hourtemp*MILLS_IN_HOUR+minutetemp*MILLS_IN_MIN;
+                long hourtemp = timePicker.getHour() - hour;
+                long minutetemp = timePicker.getMinute() - minute;
+                long temptime = hourtemp * MILLS_IN_HOUR + minutetemp * MILLS_IN_MIN;
                 alarmManager.set(AlarmManager.RTC_WAKEUP, temptime, pIntent1);
-                Toast.makeText(getContext(), "будильник сработает через " + hourtemp + " час " + minutetemp +" минут", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "будильник сработает через " + hourtemp + " час " + minutetemp + " минут", Toast.LENGTH_LONG).show();
                 currentAlarm = null;
-                if (fromTypeDayAddFragment){
+                if (isCustomCycle) {
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(TypeDayAdd.FROM_TYPE_DAY_ADD_FRAGMENT, true);
                     bundle.putInt(CURRENT_ALARM_POSITION, currentAlarmPosition);
@@ -380,7 +412,7 @@ public class AlarmAdd extends Fragment {
             public void onClick(View v) {
                 TypedArray soundIds1 = getContext().getResources().obtainTypedArray(R.array.sounds_ids);
                 int countOfSound = getResources().getIntArray(R.array.sounds_ids).length;
-                shouSoundChooseDialog(soundIds1, nameOfSound, volumeOfSound, countOfSound, true);
+                showSoundChooseDialog(soundIds1, nameOfSound, volumeOfSound, countOfSound, true);
             }
         });
         onSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -448,7 +480,7 @@ public class AlarmAdd extends Fragment {
             public void onClick(View v) {
                 TypedArray soundIds1 = getContext().getResources().obtainTypedArray(R.array.smooth_ids);
                 int countOfSmooth = getResources().getIntArray(R.array.smooth_ids).length;
-                shouSoundChooseDialog(soundIds1, nameOfSmoothMelody, volumeOfSmooth, countOfSmooth, false);
+                showSoundChooseDialog(soundIds1, nameOfSmoothMelody, volumeOfSmooth, countOfSmooth, false);
             }
         });
         volumeOfSmooth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -493,8 +525,95 @@ public class AlarmAdd extends Fragment {
                 }
             }
         });
+        mondayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[0]) {
+                    weekCycle[0] = true;
+                    mondayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[0] = false;
+                    mondayLayout.setAlpha(0.2f);
+                }
+            }
+        });
+        tuesdayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[1]) {
+                    weekCycle[1] = true;
+                    tuesdayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[1] = false;
+                    tuesdayLayout.setAlpha(0.2f);
+                }
+            }
+        });
+        wednesdayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[2]) {
+                    weekCycle[2] = true;
+                    wednesdayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[2] = false;
+                    wednesdayLayout.setAlpha(0.2f);
+                }
+            }
+        });
+        thursdayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[3]) {
+                    weekCycle[3] = true;
+                    thursdayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[3] = false;
+                    thursdayLayout.setAlpha(0.2f);
+                }
+            }
+        });
+        fridayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[4]) {
+                    weekCycle[4] = true;
+                    fridayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[4] = false;
+                    fridayLayout.setAlpha(0.2f);
+                }
+            }
+        });
+        saturdayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[5]) {
+                    weekCycle[5] = true;
+                    saturdayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[5] = false;
+                    saturdayLayout.setAlpha(0.2f);
+                }
+            }
+        });
+        sundayLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!weekCycle[6]) {
+                    weekCycle[6] = true;
+                    sundayLayout.setAlpha(1f);
+                } else {
+                    weekCycle[6] = false;
+                    sundayLayout.setAlpha(0.2f);
+                }
+            }
+        });
     }
 
+    /**
+     * Show dialog window with alarm`s pause parameters
+     */
     private void shouPauseDialog() {
         View dialog = inflater.inflate(R.layout.pause_dialog, null);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());
@@ -580,6 +699,9 @@ public class AlarmAdd extends Fragment {
         return 5;
     }
 
+    /**
+     * Show dialog window for enter someText for TextViews
+     */
     private void showDialog(final TextView textView) {
         //Получаем вид с файла prompt.xml, который применим для диалогового окна:
         View dialog = inflater.inflate(R.layout.edit_dialog, null);
@@ -612,6 +734,9 @@ public class AlarmAdd extends Fragment {
         alertDialog.show();
     }
 
+    /**
+     * create new AlarmAdd fragmen for calling from the outside class
+     */
     public static AlarmAdd newInstance(int position) {
         AlarmAdd fragment = new AlarmAdd();
         Bundle args = new Bundle();
@@ -619,14 +744,6 @@ public class AlarmAdd extends Fragment {
         args.putInt(CURRENT_ALARM_POSITION, position);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public Alarm getCurrentAlarm() {
-        return currentAlarm;
-    }
-
-    public void setCurrentAlarm(Alarm currentAlarm) {
-        this.currentAlarm = currentAlarm;
     }
 
     @Override
@@ -644,7 +761,10 @@ public class AlarmAdd extends Fragment {
         return true;
     }
 
-    private void shouSoundChooseDialog(TypedArray soundIds1, final TextView nameSound, final SeekBar volumeOfSound, int countOffiles, final boolean isSoundDialog) {
+    /**
+     * show dialog window with sound data or smoothSound(for smooth wakeUp) data(depending on the boolean isSoundDialog)
+     */
+    private void showSoundChooseDialog(TypedArray soundIds1, final TextView nameSound, final SeekBar volumeOfSound, int countOffiles, final boolean isSoundDialog) {
         View dialog = inflater.inflate(R.layout.sound_check_dialog, null);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());
         mDialogBuilder.setView(dialog);
@@ -792,6 +912,9 @@ public class AlarmAdd extends Fragment {
         alertDialog.show();
     }
 
+    /**
+     * show dialog window with vibration data
+     */
     private void showVibrationChooseDialog() {
         isVibrationDialogShow = true;
         View dialog = inflater.inflate(R.layout.sound_check_dialog, null);
@@ -859,6 +982,9 @@ public class AlarmAdd extends Fragment {
         alertDialog.show();
     }
 
+    /**
+     * adapter for vibration-, sound-, or smoothSoundList
+     */
     private class FileChooseAdapter extends RecyclerView.Adapter<AlarmAdd.FileChooseViewHolder> {
         List<String> files;
         List<long[]> patterns;
@@ -879,6 +1005,9 @@ public class AlarmAdd extends Fragment {
             return new AlarmAdd.FileChooseViewHolder(itemView);
         }
 
+        /**
+         * sound or vibration controll by click on list-position
+         */
         @Override
         public void onBindViewHolder(AlarmAdd.FileChooseViewHolder holder, final int position) {
             holder.fileName.setText(files.get(position));
@@ -919,6 +1048,9 @@ public class AlarmAdd extends Fragment {
         }
     }
 
+    /**
+     * ViewHolder for vibration-, sound-, or smoothSoundList
+     */
     static class FileChooseViewHolder extends RecyclerView.ViewHolder {
         RelativeLayout fileView;
         TextView fileName;
@@ -928,6 +1060,14 @@ public class AlarmAdd extends Fragment {
             fileView = itemView.findViewById(R.id.cycle_recycler_view);
             fileName = itemView.findViewById(R.id.name_of_cycle_text_view);
         }
+    }
+
+    public Alarm getCurrentAlarm() {
+        return currentAlarm;
+    }
+
+    public void setCurrentAlarm(Alarm currentAlarm) {
+        this.currentAlarm = currentAlarm;
     }
 
 }

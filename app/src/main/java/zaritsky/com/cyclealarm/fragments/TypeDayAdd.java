@@ -1,11 +1,9 @@
 package zaritsky.com.cyclealarm.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -20,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;;
-import android.icu.util.Calendar;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
@@ -40,24 +36,27 @@ public class TypeDayAdd extends Fragment {
     final static String TYPE_DAY_ADD_FRAGMENT = "TYPE_DAY_ADD_FRAGMENT";
     final static String NAME_OF_TYPE = "NAME_OF_TYPE";
     final static String COLOR_OF_TYPE = "COLOR_OF_TYPE";
-    TypeOfDay currentTypeOfDay;
-    Alarm currentAlarm;
-    TextView nameOfType;
-    int currentTypePosition;
-    ImageView colorOfType;
-    TextView nameOfCurrentAlarm;
-    TextView timeWakeUp;
-    LinearLayout alarmDataLayout;
-    Button saveButton;
-    TypesList typesList;
-    LayoutInflater inflater;
-    int alarmPosition;
+    private TypeOfDay currentTypeOfDay;
+    private Alarm currentAlarm;
+    private TextView nameOfType;
+    private int currentTypePosition;
+    private int alarmPosition;
+    private ImageView colorOfType;
+    private TextView nameOfCurrentAlarm;
+    private TextView timeWakeUp;
+    private LinearLayout alarmDataLayout;
+    private Button saveButton;
+    private TypesList typesList;
+    private LayoutInflater inflater;
+
     private AbleToChangeFragment callBackAvtivity;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         callBackAvtivity = (AbleToChangeFragment) context;
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -70,11 +69,11 @@ public class TypeDayAdd extends Fragment {
         nameOfCurrentAlarm = view.findViewById(R.id.name_alarm_of_type);
         timeWakeUp = view.findViewById(R.id.time_of_wake_up_type_day);
         saveButton = view.findViewById(R.id.save_type_button);
-        if (savedInstanceState!=null){
-            colorOfType.setBackgroundColor(savedInstanceState.getInt(COLOR_OF_TYPE));
+        if (savedInstanceState != null) {
+            colorOfType.setBackgroundColor(savedInstanceState.getInt(COLOR_OF_TYPE, 0));
             nameOfType.setText(savedInstanceState.getString(NAME_OF_TYPE));
         }
-        if (currentTypeOfDay !=null){
+        if (currentTypeOfDay != null) {
             currentTypePosition = getArguments().getInt(CURRENT_TYPE_POSITION);
             setCurrentParameters();
         }
@@ -89,8 +88,8 @@ public class TypeDayAdd extends Fragment {
         cp.setCallback(new ColorPickerCallback() {
             @Override
             public void onColorChosen(@ColorInt int color) {
-                if (color==0){
-                    color=Color.WHITE;
+                if (color == 0) {
+                    color = Color.WHITE;
                 }
                 colorOfType.setBackgroundColor(color);
                 tempcolor[0] = color;
@@ -105,7 +104,7 @@ public class TypeDayAdd extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(FROM_TYPE_DAY_ADD_FRAGMENT, true);
                 newAlarm.setArguments(bundle);
-                callBackAvtivity.replaceFragments(R.id.content_main, newAlarm);
+                callBackAvtivity.changeFragments(R.id.content_main, newAlarm);
                 newAlarm.getFragmentManager().putFragment(bundle, TYPE_DAY_ADD_FRAGMENT, TypeDayAdd.this);
             }
         });
@@ -113,21 +112,23 @@ public class TypeDayAdd extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentTypeOfDay ==null) {
-                    if (currentAlarm!=null) {
+                if (currentTypeOfDay == null) {
+                    if (currentAlarm != null) {
                         currentTypeOfDay = new TypeOfDay(nameOfType.getText().toString(), currentAlarm, tempcolor[0]);
+                        currentTypeOfDay.setAlarmPosition(alarmPosition);
                         typesList.addType(currentTypeOfDay);
+                        currentTypeOfDay = null;
+                    } else {
+                        Toast.makeText(getContext(), "Сначало добавьте будильник", Toast.LENGTH_SHORT).show();
                     }
-                    else Toast.makeText(getContext(), "Сначало добавьте будильник", Toast.LENGTH_SHORT).show();
-                    currentTypeOfDay =null;
-                    currentAlarm=null;
-                }else {
-                    //currentTypeOfDay = new TypeOfDay(nameOfType.getText().toString(), calendar, tempcolor[0]);
+                } else {
                     currentTypeOfDay.setName(nameOfType.getText().toString());
                     currentTypeOfDay.setAlarmOfType(currentAlarm);
                     currentTypeOfDay.setColor(tempcolor[0]);
+                    currentTypeOfDay.setAlarmPosition(alarmPosition);
                     typesList.editType(currentTypeOfDay, currentTypePosition);
-                    currentTypeOfDay =null;
+                    currentTypeOfDay = null;
+                    currentAlarm = null;
                 }
             }
         });
@@ -143,12 +144,12 @@ public class TypeDayAdd extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(getArguments()!=null) {
+        if (getArguments() != null) {
             alarmPosition = getArguments().getInt(AlarmAdd.CURRENT_ALARM_POSITION);
             boolean fromAlarmAdd = getArguments().getBoolean(FROM_TYPE_DAY_ADD_FRAGMENT, false);
             if (fromAlarmAdd)
                 currentAlarm = AlarmList.getInstance(getContext()).getAlarmList().get(alarmPosition);
-            if (currentAlarm!=null){
+            if (currentAlarm != null) {
                 nameOfCurrentAlarm.setText(currentAlarm.getName());
                 timeWakeUp.setText(currentAlarm.getFormatedTime());
             }
@@ -157,15 +158,16 @@ public class TypeDayAdd extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-
-        ColorDrawable drawable = (ColorDrawable)colorOfType.getDrawable();
-        int savedColor = drawable.getColor();
-        outState.putInt(COLOR_OF_TYPE, savedColor);
+        ColorDrawable drawable = (ColorDrawable) colorOfType.getBackground();
+        if (drawable != null) {
+            int savedColor = drawable.getColor();
+            outState.putInt(COLOR_OF_TYPE, savedColor);
+        }
         outState.putString(NAME_OF_TYPE, nameOfType.getText().toString());
         super.onSaveInstanceState(outState);
     }
 
-    private void setCurrentParameters(){
+    private void setCurrentParameters() {
         nameOfType.setText(currentTypeOfDay.getName());
         colorOfType.setBackgroundColor(currentTypeOfDay.getColor());
         currentAlarm = currentTypeOfDay.getAlarmOfType();
@@ -173,8 +175,8 @@ public class TypeDayAdd extends Fragment {
         String[] time = wakeUp.split(":");
         int hour = Integer.valueOf(time[0]);
         int minute = Integer.valueOf(time[1]);
-
     }
+
     public static TypeDayAdd newInstance(int position) {
         TypeDayAdd fragment = new TypeDayAdd();
         Bundle args = new Bundle();

@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -39,8 +39,8 @@ public class CycleAdd extends Fragment {
     private Cycle currentCycle;
     private CycleList cycleList;
     private LayoutInflater inflater;
-    int currentCyclePosition;
-    GridLayoutManager layoutManager;
+    private int currentCyclePosition;
+    private GridLayoutManager layoutManager;
 
     @Nullable
     @Override
@@ -165,7 +165,7 @@ public class CycleAdd extends Fragment {
                     tempArr[position] = null;
                 }
             }
-            holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (typesList.size() > 0) {
@@ -190,13 +190,13 @@ public class CycleAdd extends Fragment {
     }
 
     class CycleAddViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout linearLayout;
+        RelativeLayout relativeLayout;
         TextView nameOfType;
         TextView wakeUpTime;
 
         CycleAddViewHolder(View itemView) {
             super(itemView);
-            linearLayout = itemView.findViewById(R.id.type_of_day_background_table);
+            relativeLayout = itemView.findViewById(R.id.type_of_day_background_table);
             nameOfType = itemView.findViewById(R.id.type_of_day_name_table);
             wakeUpTime = itemView.findViewById(R.id.type_of_day_wake_up_table);
         }

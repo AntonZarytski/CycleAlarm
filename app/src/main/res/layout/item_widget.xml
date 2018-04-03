@@ -21,7 +21,7 @@
 
     <ImageView
         android:id="@+id/item_take_of_alarm"
-        android:layout_width="70dp"
+        android:layout_width="171dp"
         android:layout_height="30dp"
         android:paddingStart="16dp"
         android:scaleType="centerInside"

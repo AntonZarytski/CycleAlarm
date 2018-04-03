@@ -11,6 +11,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_TIME = "wakeup";
     public static final String COLUMN_COLOR = "color";
+    public static final String COLUMN_ALARM_POSITION = "alarm_position";
     static final String TABLE_TYPES = "types_of_day"; // название таблицы в бд
     private static final int DATABASE_VERSION = 2; // версия базы данных
     private static final String DATABASE_NAME = "types.db"; // название бд
@@ -23,7 +24,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         db.execSQL("CREATE TABLE " + TABLE_TYPES + " (" + COLUMN_ID
-                + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_NAME + " TEXT," + COLUMN_TIME + " TEXT," + COLUMN_COLOR + " INTEGER);");
+                + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_NAME + " TEXT," + COLUMN_TIME + " TEXT," + COLUMN_COLOR + " INTEGER," + COLUMN_ALARM_POSITION + " INTEGER);");
     }
 
     @Override

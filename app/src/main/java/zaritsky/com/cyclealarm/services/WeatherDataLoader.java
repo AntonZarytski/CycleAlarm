@@ -69,7 +69,6 @@ public class WeatherDataLoader extends IntentService {
             URL url = new URL(String.format(OPEN_WEATHER_MAP_API, lat, lon, appId));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            //зачем эти методы???
             // connection.addRequestProperty("id", cityId);
             //connection.addRequestProperty(KEY, context.getString(R.string.open_weather_map_app_id));
 

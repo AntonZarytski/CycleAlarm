@@ -29,14 +29,17 @@ public class LocationService {
     private static String lon;
     private static Context context;
     private static TimeZone timeZone;
+
     private LocationService(){
     }
+
     public static LocationService getInstance(){
         if (locationService==null){
             return locationService = new LocationService();
         }else return locationService;
     }
-    public void onStartWeatherServiceService(Activity activity) {
+
+    public void onStartWeatherService(Activity activity) {
         Toast.makeText(context, "service starting", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(context, WeatherDataLoader.class);
         intent.putExtra(LON_KEY, lon);
@@ -45,6 +48,7 @@ public class LocationService {
     }
 
     public void startLocationService(Activity activity) {
+        //TODO AlarmManager для запуска сервиса за 5 мин до сработки будильника
         context = activity.getBaseContext();
         locationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

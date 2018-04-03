@@ -20,7 +20,8 @@ public class CycleDataSource {
             DataBaseHelper.COLUMN_ID,
             DataBaseHelper.COLUMN_NAME,
             DataBaseHelper.COLUMN_TIME,
-            DataBaseHelper.COLUMN_COLOR
+            DataBaseHelper.COLUMN_COLOR,
+            DataBaseHelper.COLUMN_ALARM_POSITION
     };
 
     public CycleDataSource(Context context) {
@@ -40,17 +41,17 @@ public class CycleDataSource {
         values.put(DataBaseHelper.COLUMN_NAME, type.getName());
         values.put(DataBaseHelper.COLUMN_TIME, type.getTimeOfWakeUp());
         values.put(DataBaseHelper.COLUMN_COLOR, type.getColor());
+        values.put(DataBaseHelper.COLUMN_ALARM_POSITION, type.getAlarmPosition());
 
         database.insert(DataBaseHelper.TABLE_TYPES, null, values);
     }
 
     public void editType(TypeOfDay oldType, TypeOfDay newType) {
         ContentValues editedType = new ContentValues();
-        //editedNote.put(DataBaseHelper.COLUMN_ID, id);
         editedType.put(DataBaseHelper.COLUMN_NAME, newType.getName());
         editedType.put(DataBaseHelper.COLUMN_TIME, newType.getTimeOfWakeUp());
         editedType.put(DataBaseHelper.COLUMN_COLOR, newType.getColor());
-
+        editedType.put(DataBaseHelper.COLUMN_ALARM_POSITION, newType.getAlarmPosition());
         database.update(DataBaseHelper.TABLE_TYPES,
                 editedType,
                 DataBaseHelper.COLUMN_NAME + "=" + oldType.getName(),
@@ -89,6 +90,7 @@ public class CycleDataSource {
         type.setName(cursor.getString(1));
         type.setTimeOfWakeUp(cursor.getString(2));
         type.setColor(cursor.getInt(3));
+        type.setAlarmPosition(cursor.getInt(4));
         return type;
     }
 

@@ -19,11 +19,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.R;
@@ -59,7 +54,7 @@ public class AlarmsRecyclerList extends Fragment {
             @Override
             public void onClick(View view) {
                 AlarmAdd newAlarm = new AlarmAdd();
-                callBackAvtivity.replaceFragments(R.id.content_main, newAlarm);
+                callBackAvtivity.changeFragments(R.id.content_main, newAlarm);
             }
         });
         return view;

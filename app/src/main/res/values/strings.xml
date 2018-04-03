@@ -65,6 +65,7 @@
     <string name="friday_short">Пт</string>
     <string name="saturday_short">Сб</string>
     <string name="sunday_short">Вс</string>
+    <string name="pause">Пауза</string>
     <array name="vibrator_names">
         <item>"Basic call"</item>
         <item>"Tick tock"</item>
