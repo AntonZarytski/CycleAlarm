@@ -3,9 +3,13 @@ package zaritsky.com.cyclealarm.models;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * singleton clas contains ist<long[]> with paterns for Vibrator service
+ */
 public class VibratorPatterns {
     private static final VibratorPatterns ourInstance = new VibratorPatterns();
-       private static List<long[]> vibratorData;
+    private static List<long[]> vibratorData;
+
     public static VibratorPatterns getInstance() {
         return ourInstance;
     }

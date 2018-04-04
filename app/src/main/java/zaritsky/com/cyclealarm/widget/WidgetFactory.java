@@ -100,14 +100,6 @@ class WidgetFactory implements RemoteViewsService.RemoteViewsFactory {
             notesAlarm.add(alarms.get(i).getNote());
             alarmIsOn.add(alarms.get(i).isOn());
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            timeWakeUp.add(sdf.format(new Date(System.currentTimeMillis())));
-//        }
-//        timeWakeUp.add(String.valueOf(hashCode()));
-//        timeWakeUp.add(String.valueOf(widgetID));
-//        for (int i = 3; i < 15; i++) {
-//            timeWakeUp.add("Item " + i);
-//        }
     }
 
     @Override

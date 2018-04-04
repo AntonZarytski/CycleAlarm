@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * class-model for cycle, contains List<TypeOfDay> with cycle`s typeOfDay
+ */
 public class Cycle implements Serializable {
     private String name;
     private List<TypeOfDay> cycle;
@@ -19,27 +22,34 @@ public class Cycle implements Serializable {
         cycle = new ArrayList<>(35);
     }
 
-    public List<TypeOfDay> getCycle(){
+    public List<TypeOfDay> getCycle() {
         return cycle;
     }
-    public void addToCycle(TypeOfDay typeOfDay){
+
+    public void addToCycle(TypeOfDay typeOfDay) {
         cycle.add(typeOfDay);
     }
-    public void addToCycle(TypeOfDay typeOfDay, int index){
+
+    public void addToCycle(TypeOfDay typeOfDay, int index) {
         cycle.set(index, typeOfDay);
     }
-    public void addAllToCycle(TypeOfDay ... types){
+
+    public void addAllToCycle(TypeOfDay... types) {
         Collections.addAll(cycle, types);
     }
-    public void removeFromCycle(TypeOfDay typeOfDay){
+
+    public void removeFromCycle(TypeOfDay typeOfDay) {
         cycle.remove(typeOfDay);
     }
-    public void removeFromCycle(int index){
+
+    public void removeFromCycle(int index) {
         cycle.remove(index);
     }
-    public void setCycle(List<TypeOfDay> currentCycle){
+
+    public void setCycle(List<TypeOfDay> currentCycle) {
         cycle = currentCycle;
     }
+
     public void setName(String name) {
         this.name = name;
     }

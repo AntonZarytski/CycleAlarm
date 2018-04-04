@@ -1,21 +1,22 @@
 package zaritsky.com.cyclealarm.models.dataBase;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 
+/**
+ * class contains methods with prepared statement to DB
+ */
 public class CycleDataSource {
     private DataBaseHelper dbHelper;
     private SQLiteDatabase database;
-
     private String[] notesAllColumn = {
             DataBaseHelper.COLUMN_ID,
             DataBaseHelper.COLUMN_NAME,
@@ -86,7 +87,6 @@ public class CycleDataSource {
 
     private TypeOfDay cursorToType(Cursor cursor) {
         TypeOfDay type = new TypeOfDay();
-        //note.setId(cursor.getLong(0));
         type.setName(cursor.getString(1));
         type.setTimeOfWakeUp(cursor.getString(2));
         type.setColor(cursor.getInt(3));

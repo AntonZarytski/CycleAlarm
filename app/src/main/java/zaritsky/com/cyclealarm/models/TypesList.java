@@ -8,6 +8,10 @@ import java.util.List;
 
 import zaritsky.com.cyclealarm.models.dataBase.CycleDataSource;
 
+/**
+ * singleton class contains List<TypeOfDay> with all typesOfDay in app
+ * new type add to DB (int color, string name, string wakeUpTime, int alarmPosition)
+ */
 public class TypesList {
     private List<TypeOfDay> types;
     private static TypesList ourInstance = null;
@@ -16,8 +20,8 @@ public class TypesList {
     public static TypesList getInstance(Context context) {
         if (ourInstance == null) {
             return ourInstance = new TypesList(context);
-        }else
-        return ourInstance;
+        } else
+            return ourInstance;
     }
 
     public static TypesList getOurInstance() {
@@ -32,19 +36,22 @@ public class TypesList {
         types = cycleDataSource.getAllTypes();
         cycleDataSource.close();
     }
-    public void addType(TypeOfDay type){
+
+    public void addType(TypeOfDay type) {
         types.add(type);
         cycleDataSource.open();
         cycleDataSource.addType(type);
         cycleDataSource.close();
     }
-    public  void removeTypeOfDay(TypeOfDay type){
+
+    public void removeTypeOfDay(TypeOfDay type) {
         types.remove(type);
         cycleDataSource.open();
         cycleDataSource.deleteType(type);
         cycleDataSource.close();
     }
-    public void editType(TypeOfDay type, int position){
+
+    public void editType(TypeOfDay type, int position) {
         TypeOfDay temp = types.remove(position);
         types.add(position, type);
         cycleDataSource.open();
@@ -62,7 +69,7 @@ public class TypesList {
         this.types = types;
         cycleDataSource.open();
         cycleDataSource.deleteAll();
-        for (int i = 0; i <this.types.size() ; i++) {
+        for (int i = 0; i < this.types.size(); i++) {
             cycleDataSource.addType(this.types.get(i));
         }
         cycleDataSource.close();

@@ -15,6 +15,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * model-class of Alarm
+ */
 public class Alarm extends BroadcastReceiver implements Serializable {
     private Calendar currentCalendar;
     private String name;

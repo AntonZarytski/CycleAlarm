@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * JSON file - converter
+ */
 public class WeatherMap {
     @SerializedName("cod")
     String code;
@@ -45,7 +48,7 @@ public class WeatherMap {
     }
 
     public Float getPressure() {
-        return list.get(0).mainElement.pressure*0.75006375541921f;
+        return list.get(0).mainElement.pressure * 0.75006375541921f;
     }
 
     public String getDescription() {
@@ -59,10 +62,12 @@ public class WeatherMap {
     public String getCountry() {
         return city.country;
     }
-    public Float getTemp(){
-        return list.get(0).mainElement.temp-273.15f;
+
+    public Float getTemp() {
+        return list.get(0).mainElement.temp - 273.15f;
     }
-    public Float getWindSpeed(){
+
+    public Float getWindSpeed() {
         return list.get(0).windElement.speed;
     }
 

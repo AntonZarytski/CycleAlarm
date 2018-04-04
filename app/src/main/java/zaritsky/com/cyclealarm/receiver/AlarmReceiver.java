@@ -7,6 +7,9 @@ import android.content.Intent;
 
 import zaritsky.com.cyclealarm.activities.ArarmIsActive;
 
+/**
+ * AlarmReceiver call Activity when alarm must by start
+ */
 public class AlarmReceiver extends BroadcastReceiver {
 
     @Override

@@ -19,6 +19,10 @@ import java.util.TimeZone;
 
 import static android.content.Context.LOCATION_SERVICE;
 
+/**
+ * this singleton class define location by GPS or Network of phone
+ * (depends on availability GPS or Net )
+ */
 public class LocationService {
     private static LocationService locationService;
     private static final String LOG = "GPS";
@@ -30,13 +34,13 @@ public class LocationService {
     private static Context context;
     private static TimeZone timeZone;
 
-    private LocationService(){
+    private LocationService() {
     }
 
-    public static LocationService getInstance(){
-        if (locationService==null){
+    public static LocationService getInstance() {
+        if (locationService == null) {
             return locationService = new LocationService();
-        }else return locationService;
+        } else return locationService;
     }
 
     public void onStartWeatherService(Activity activity) {
@@ -114,9 +118,9 @@ public class LocationService {
         if (location.getProvider().equals(LocationManager.GPS_PROVIDER) || location.getProvider().equals(LocationManager.NETWORK_PROVIDER)) {
             lon = String.valueOf(location.getLongitude());
             lat = String.valueOf(location.getLatitude());
-            timeZone =  TimeZone.getDefault();
-            Log.e(LOG, "lon: " +  formatLocation(location));
-            Log.e(LOG, "lat: " +  formatLocation(location));
+            timeZone = TimeZone.getDefault();
+            Log.e(LOG, "lon: " + formatLocation(location));
+            Log.e(LOG, "lat: " + formatLocation(location));
         }
     }
 

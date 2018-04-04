@@ -22,12 +22,20 @@ import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 import zaritsky.com.cyclealarm.models.TypesList;
 
+/**
+ * RecyclerView for all typesOfDay of user. The source of data - is the List<TypeOfDay> that is loaded from
+ * the model-class singleton TypesList
+ */
 public class TypeDayRecyclerList extends Fragment {
     private static AbleToChangeFragment callBackAvtivity;
     private FloatingActionButton fab;
     private TypesList typesList;
     private TypeDayAdapter adapter;
     private RecyclerView recyclerView;
+
+    /**
+     * Interface callBackAvtivity for call the method for change the fragment for the selected position
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -45,6 +53,9 @@ public class TypeDayRecyclerList extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
         fab = view.findViewById(R.id.floating_button_add_type_day);
+        /**
+         * create new TypeOfDay
+         * */
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +68,9 @@ public class TypeDayRecyclerList extends Fragment {
         return view;
     }
 
+    /**
+     * adapter for recyclerView
+     */
     static class TypeDayAdapter extends RecyclerView.Adapter<TypeDayViewHolder> {
         List<TypeOfDay> types;
         Context context;
@@ -79,6 +93,9 @@ public class TypeDayRecyclerList extends Fragment {
             holder.nameOfType.setText(current.getName());
             holder.wakeUpTime.setText(current.getTimeOfWakeUp());
             holder.typeElement.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * call fragment for the selected position
+                 * */
                 @Override
                 public void onClick(View v) {
                     TypeDayAdd type = TypeDayAdd.newInstance(position);
@@ -95,7 +112,9 @@ public class TypeDayRecyclerList extends Fragment {
                 return 0;
         }
     }
-
+    /**
+     * viewHolder for recyclerView
+     */
     static class TypeDayViewHolder extends RecyclerView.ViewHolder {
         RelativeLayout typeElement;
         TextView nameOfType;

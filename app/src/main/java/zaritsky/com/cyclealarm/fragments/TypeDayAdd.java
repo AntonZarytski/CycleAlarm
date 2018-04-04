@@ -30,6 +30,11 @@ import zaritsky.com.cyclealarm.models.AlarmList;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 import zaritsky.com.cyclealarm.models.TypesList;
 
+/**
+ * class for creating custom typeOfDay with custom alarm for this type,
+ * here user can check color of type(will be imposed on calendar`s element(some day)),
+ * alarm for this day, and name for this type
+ */
 public class TypeDayAdd extends Fragment {
     final static String CURRENT_TYPE_POSITION = "CURRENT_TYPE_POSITION";
     final static String FROM_TYPE_DAY_ADD_FRAGMENT = "FROM_TYPE_DAY_ADD_FRAGMENT";
@@ -51,6 +56,9 @@ public class TypeDayAdd extends Fragment {
 
     private AbleToChangeFragment callBackAvtivity;
 
+    /**
+     * Interface callBackAvtivity for call the method for change the fragment for the selected position
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -78,6 +86,9 @@ public class TypeDayAdd extends Fragment {
             setCurrentParameters();
         }
         final int[] tempcolor = new int[1];
+        /**
+         * select color for this type
+         * */
         final ColorPicker cp = new ColorPicker(getActivity(), 128, 128, 128, 128);
         colorOfType.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +107,9 @@ public class TypeDayAdd extends Fragment {
                 cp.closeOptionsMenu();
             }
         });
-
+        /**
+         * add new alarm for this type
+         * */
         alarmDataLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +121,9 @@ public class TypeDayAdd extends Fragment {
                 newAlarm.getFragmentManager().putFragment(bundle, TYPE_DAY_ADD_FRAGMENT, TypeDayAdd.this);
             }
         });
-
+        /**
+         * add or change current type to typesList
+         * */
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,6 +156,10 @@ public class TypeDayAdd extends Fragment {
         return view;
     }
 
+    /**
+     * set alarm for this type, if alarm was create for custom TypeOfDay (set parameters from
+     * outside fragment)
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -167,6 +186,9 @@ public class TypeDayAdd extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * set parameters for current type
+     */
     private void setCurrentParameters() {
         nameOfType.setText(currentTypeOfDay.getName());
         colorOfType.setBackgroundColor(currentTypeOfDay.getColor());
@@ -177,6 +199,9 @@ public class TypeDayAdd extends Fragment {
         int minute = Integer.valueOf(time[1]);
     }
 
+    /**
+     * create new TypeDayAdd fragmen for calling from the outside class
+     */
     public static TypeDayAdd newInstance(int position) {
         TypeDayAdd fragment = new TypeDayAdd();
         Bundle args = new Bundle();
@@ -190,6 +215,9 @@ public class TypeDayAdd extends Fragment {
         this.currentTypeOfDay = typeOfDay;
     }
 
+    /**
+     * show dialog window for edit some text
+     */
     private void showDialog(final TextView textView) {
         View dialog = inflater.inflate(R.layout.edit_dialog, null);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());

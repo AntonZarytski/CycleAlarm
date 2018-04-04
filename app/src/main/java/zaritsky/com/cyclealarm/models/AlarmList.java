@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * singleton class, contains List<Alarm> alarmList with all alarms of app
+ */
 public class AlarmList implements Serializable {
     private static AlarmList ourInstance = null;
     private transient Context context;
@@ -35,20 +38,25 @@ public class AlarmList implements Serializable {
     public List<Alarm> getAlarmList() {
         return alarmList;
     }
-    public void addAlarm(Alarm alarm){
+
+    public void addAlarm(Alarm alarm) {
         alarmList.add(alarm);
     }
-    public void removeAlarm(Alarm alarm){
+
+    public void removeAlarm(Alarm alarm) {
         alarmList.remove(alarm);
     }
-    public void removeAlarm(int position){
+
+    public void removeAlarm(int position) {
         alarmList.remove(position);
     }
-    public void changeAlarm(Alarm newAlarm, int position){
+
+    public void changeAlarm(Alarm newAlarm, int position) {
         alarmList.remove(position);
         alarmList.add(position, newAlarm);
     }
-    public int getAlarmPosition(Alarm alarm){
+
+    public int getAlarmPosition(Alarm alarm) {
         return alarmList.indexOf(alarm);
     }
 }

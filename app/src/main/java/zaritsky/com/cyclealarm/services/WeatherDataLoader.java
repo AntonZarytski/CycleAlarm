@@ -1,21 +1,11 @@
 package zaritsky.com.cyclealarm.services;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -25,12 +15,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 
-import zaritsky.com.cyclealarm.activities.MainActivity;
-
+/**
+ * download JSON from openweathermap.org by gps coordinates and parse it to weather data parameters
+ */
 public class WeatherDataLoader extends IntentService {
 
     //private static final String cityId = "524901";
@@ -99,8 +88,8 @@ public class WeatherDataLoader extends IntentService {
         lon = intent.getStringExtra(LON_KEY);
         lat = intent.getStringExtra(LAT_KEY);
         jsonObject = getJSONData();
-        if (jsonObject!=null)
-        Log.e(LOG, "lat" + lat + " lon " + lon + " JSONObject " + jsonObject.toString());
+        if (jsonObject != null)
+            Log.e(LOG, "lat" + lat + " lon " + lon + " JSONObject " + jsonObject.toString());
     }
 
     @Override

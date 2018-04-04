@@ -21,14 +21,19 @@ import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
-
+/**
+ * RecyclerView for all cycles of user. The source of data - is the List<Cycle> that is loaded from
+ * the model-class singleton CycleList
+ */
 public class CycleRecyclerList extends Fragment{
         private AbleToChangeFragment callBackAvtivity;
         private RecyclerView recyclerView;
         private CycleAdapter adapter;
         private CycleList cycleList;
 
-
+    /**
+     * Interface callBackAvtivity for call the method for change the fragment for the selected position
+     */
         @Override
         public void onAttach(Context context) {
             super.onAttach(context);
@@ -45,6 +50,9 @@ public class CycleRecyclerList extends Fragment{
         recyclerView.setLayoutManager(layoutManager);
 
         FloatingActionButton fab = view.findViewById(R.id.floating_button_add_cycle);
+        /**
+         * create new cycle
+         */
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,25 +67,8 @@ public class CycleRecyclerList extends Fragment{
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-            //TODO перенести в onAttach
         super.onCreate(savedInstanceState);
         cycleList =  CycleList.getInstance(getContext());
-        //TODO загрузка листа циклов из внутренней памяти
-//        List<Cycle> cycles;
-//        try {
-//            File file = new File(getActivity().getApplicationContext().getFilesDir(), FILENAME);
-//            if (!file.exists()) {
-//                return;
-//            }
-//            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-//            cycles = (List<Cycle>) ois.readObject();
-//            if (cycles==null){
-//               cycles = new ArrayList<>();
-//            }
-//            cycleList.setCycleList(cycles);
-//        } catch (IOException | ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
         adapter = new CycleAdapter(cycleList.getCycleList(), getContext());
     }
 
@@ -119,6 +110,9 @@ public class CycleRecyclerList extends Fragment{
             holder.cycleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    /**
+                     * call fragment for the selected position
+                     * */
                     CycleAdd cycleAdd = CycleAdd.newInstance(position);
                     callBackAvtivity.changeFragments(R.id.content_main, cycleAdd);
                 }

@@ -9,21 +9,26 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+/**
+ * model-class TypeOfDay contains color(for calendarView), alarm? and this
+ * alarm position in AlarmList.class
+ */
 public class TypeOfDay implements Serializable {
-   private String name;
-   private Alarm alarmOfType;
-   private String timeOfWakeUp;
-   private int color;
-   private int alarmPosition;
+    private String name;
+    private Alarm alarmOfType;
+    private String timeOfWakeUp;
+    private int color;
+    private int alarmPosition;
 
     @SuppressLint("NewApi")
-    public TypeOfDay(String name, Alarm  alarmOfType, int color) {
+    public TypeOfDay(String name, Alarm alarmOfType, int color) {
         this.name = name;
-        this. alarmOfType =  alarmOfType;
+        this.alarmOfType = alarmOfType;
         this.timeOfWakeUp = alarmOfType.getFormatedTime();
         this.color = color;
     }
-    public TypeOfDay(){
+
+    public TypeOfDay() {
 
     }
 

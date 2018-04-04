@@ -26,14 +26,19 @@ import zaritsky.com.cyclealarm.interfaces.AbleToChangeFragment;
 import zaritsky.com.cyclealarm.models.Alarm;
 import zaritsky.com.cyclealarm.models.AlarmList;
 
-
+/**
+ * RecyclerView for all alarms of user. The source of data - is the List<Alarm> that is loaded from
+ * the model-class  singleton AlarmList
+ */
 public class AlarmsRecyclerList extends Fragment {
     private RecyclerView recyclerView;
     private AlarmAdapter adapter;
     private List<Alarm> alarmList;
     private AbleToChangeFragment callBackAvtivity;
 
-
+    /**
+     * Interface callBackAvtivity for call the method for change the fragment for the selected position
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -50,6 +55,9 @@ public class AlarmsRecyclerList extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         FloatingActionButton fab = view.findViewById(R.id.floating_button_add_alarm);
+        /**
+         * create new Alarm with week cycle
+         * */
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,10 +73,10 @@ public class AlarmsRecyclerList extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final AlarmList alarms = AlarmList.getInstance(getContext());
-        alarmList=alarms.getAlarmList();
+        alarmList = alarms.getAlarmList();
         adapter = new AlarmAdapter(alarmList, getContext());
     }
-
+    /**adapter for the recyclerView*/
     private class AlarmAdapter extends RecyclerView.Adapter<AlarmViewHolder> {
         List<Alarm> alarmList;
         Context context;
@@ -89,6 +97,7 @@ public class AlarmsRecyclerList extends Fragment {
         public void onBindViewHolder(final AlarmViewHolder holder, final int position) {
             final Alarm alarm = alarmList.get(position);
             holder.timeOfAlarm.setText(alarm.getFormatedTime());
+            //TODO отображение цикла сработки будильника
             holder.daysOfActive.setText("Пн Вт Ср Чт Пт Сб Вс"/*alarm.getDatesOfActiveCycle()*/);
             final Switch activeAlarm = holder.onOffAlarmSwitch;
             activeAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -100,6 +109,7 @@ public class AlarmsRecyclerList extends Fragment {
                     } else alarm.setActive(false);
                 }
             });
+            //TODO увеличение элемента для оотображения мелодии сигнала и напоминание (и мб элементы)
             holder.expandElementDown.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -110,10 +120,11 @@ public class AlarmsRecyclerList extends Fragment {
             holder.alarmView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    /**
+                     * call fragment for the selected position
+                     * */
                     AlarmAdd alarm = AlarmAdd.newInstance(position);
                     callBackAvtivity.onSelectedFragment(alarm, holder.getAdapterPosition());
-                    /*Toast toast = Toast.makeText(getContext(), "На фрагмент будильника", Toast.LENGTH_LONG);
-                    toast.show();*/
                 }
             });
 
@@ -126,8 +137,8 @@ public class AlarmsRecyclerList extends Fragment {
             } else return 0;
         }
     }
-
-    static class AlarmViewHolder extends RecyclerView.ViewHolder{
+    /**viewHolder for the recyclerView*/
+    static class AlarmViewHolder extends RecyclerView.ViewHolder {
         RelativeLayout alarmView;
         TextView timeOfAlarm;
         Switch onOffAlarmSwitch;

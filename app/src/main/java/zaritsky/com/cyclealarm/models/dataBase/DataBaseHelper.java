@@ -4,8 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * Class for create and update the DB
+ */
 public class DataBaseHelper extends SQLiteOpenHelper {
-
     // названия столбцов
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
@@ -30,7 +32,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 1 && newVersion == 2) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_TYPES );
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_TYPES);
             onCreate(db);
         }
     }

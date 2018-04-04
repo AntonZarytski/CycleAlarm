@@ -27,6 +27,11 @@ import zaritsky.com.cyclealarm.models.CycleList;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
 import zaritsky.com.cyclealarm.models.TypesList;
 
+/**
+ * RecyclerView for creating new Cycle. Is the table 7x5 (five weeks) whe userc can change
+ * separate element of recyclerView(one day of cycle) to the different types of days that
+ * the user created earlier List<TypeOfDay>. Max period of cycle is 7x5=35 days.
+ */
 public class CycleAdd extends Fragment {
     private final String CYCLEFILE = "CycleList";
     private final static String CURRENT_CYCLE_POSITION = "CURRENT_CYCLE_POSITION";
@@ -72,6 +77,10 @@ public class CycleAdd extends Fragment {
                     currentCycle.setName(nameOfCycle.getText().toString());
                     cycleList.changeCycle(currentCycle, currentCyclePosition);
                 }
+                /**
+                 * After creating new Cycle and adding it to CycleList
+                 *  class-model, to write it to internal memory
+                 *  */
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -109,6 +118,9 @@ public class CycleAdd extends Fragment {
         currentCycle = null;
     }
 
+    /**
+     * create new CycleAdd fragmen for calling from the outside class
+     */
     public static CycleAdd newInstance(int position) {
         CycleAdd fragment = new CycleAdd();
         Bundle args = new Bundle();
@@ -122,6 +134,9 @@ public class CycleAdd extends Fragment {
         this.currentCycle = currentCycle;
     }
 
+    /**
+     * class-adapter for recyclerview
+     */
     class CycleAddAdapter extends RecyclerView.Adapter<CycleAddViewHolder> {
         List<TypeOfDay> typesList;
         Context context;
@@ -189,6 +204,9 @@ public class CycleAdd extends Fragment {
         }
     }
 
+    /**
+     * view holder for recyclerView
+     */
     class CycleAddViewHolder extends RecyclerView.ViewHolder {
         RelativeLayout relativeLayout;
         TextView nameOfType;
@@ -202,6 +220,9 @@ public class CycleAdd extends Fragment {
         }
     }
 
+    /**
+     * show dialog window for edit some text
+     */
     private void showDialog(final TextView textView) {
         View dialog = inflater.inflate(R.layout.edit_dialog, null);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(getContext());

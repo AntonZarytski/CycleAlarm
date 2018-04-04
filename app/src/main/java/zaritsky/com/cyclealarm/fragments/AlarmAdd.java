@@ -1006,7 +1006,7 @@ public class AlarmAdd extends Fragment {
         }
 
         /**
-         * sound or vibration controll by click on list-position
+         * sound or vibration control by click on list-position
          */
         @Override
         public void onBindViewHolder(AlarmAdd.FileChooseViewHolder holder, final int position) {

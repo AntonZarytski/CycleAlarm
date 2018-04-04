@@ -28,7 +28,8 @@ import zaritsky.com.cyclealarm.R;
 import zaritsky.com.cyclealarm.models.Cycle;
 import zaritsky.com.cyclealarm.models.CycleList;
 import zaritsky.com.cyclealarm.models.TypeOfDay;
-
+/**Class for showing calendar with superimposed on top of the cycleList<TypeOfDay>
+ * visual representation of the cycle to the user*/
 public class CalendarFragment extends Fragment {
     private EventDecorator decorator;
     private MaterialCalendarView calendarView;

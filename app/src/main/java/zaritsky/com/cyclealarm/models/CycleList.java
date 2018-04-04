@@ -6,13 +6,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CycleList implements Serializable{
+/**
+ * this singlton class contains List<Cycle> with all user`s cycles
+ */
+public class CycleList implements Serializable {
     private List<Cycle> cycleList;
     private transient Context context;
     private static CycleList ourInstance = null;
 
     public static CycleList getInstance(Context context) {
-        if (ourInstance==null){
+        if (ourInstance == null) {
             return ourInstance = new CycleList(context);
         }
         return ourInstance;
@@ -26,17 +29,20 @@ public class CycleList implements Serializable{
         cycleList = new ArrayList<>();
     }
 
-    public void addToCycles(Cycle cycle){
+    public void addToCycles(Cycle cycle) {
         cycleList.add(cycle);
     }
-    public void editCycle(Cycle cycle, int position){
+
+    public void editCycle(Cycle cycle, int position) {
         cycleList.remove(position);
         cycleList.add(position, cycle);
     }
-    public void removeCycle(Cycle cycle){
+
+    public void removeCycle(Cycle cycle) {
         cycleList.remove(cycle);
     }
-    public void changeCycle(Cycle newcycle, int changedCyclePosition){
+
+    public void changeCycle(Cycle newcycle, int changedCyclePosition) {
         cycleList.remove(changedCyclePosition);
         cycleList.add(changedCyclePosition, newcycle);
     }
